@@ -118,7 +118,7 @@
         globalData = res.data.slice(1).filter(r => r[0] && r[0] !== "Varlık").map(r => ({
           ad: r[0].trim(), tur: r[1], alisTarihi: r[2], vade: r[3], adet: clean(r[4]),
           aFiyat: clean(r[5]), yatirim: clean(r[6]), fiyat: clean(r[7]), 
-          tutar: clean(r[8]), gKZ: clean(r[9]), hKZ: clean(r[10]), aKZ: clean(r[11]), tKZ: clean(r[12])
+          tutar: clean(r[8]), gKZ: clean(r[9]), hKZ: clean(r[10]), aKZ: clean(r[11]), tKZ: clean(r[15])
         }));
         renderAll();
       }
