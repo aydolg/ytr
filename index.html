@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Elite Portföy Terminali v4 — Magma Crimson</title>
+  <title>Elite Portföy Terminali v4 — Magma Crimson + Sepet Motoru</title>
 
-  <!-- Font & Charts -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fonts & Charts & CSV -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
     /* ===== THEME: Magma Crimson — Glassmorphism + Neon Glow ===== */
@@ -21,15 +22,15 @@
       --text-muted: #9aa5b1;
 
       /* Theme Accents */
-      --magma-1: #ff3b2f;     /* crimson */
-      --magma-2: #ff7a1a;     /* orange */
-      --magma-3: #ffa24c;     /* amber */
+      --magma-1: #ff3b2f;
+      --magma-2: #ff7a1a;
+      --magma-3: #ffa24c;
       --glow: rgba(255, 82, 35, 0.35);
       --glow-strong: rgba(255, 82, 35, 0.6);
 
       /* Semantic colors */
-      --up: #17f1a7;          /* neon green for positive */
-      --down: #ff4d6d;        /* crimson/red for negative */
+      --up: #17f1a7;    /* neon green */
+      --down: #ff4d6d;  /* crimson/red */
     }
 
     /* Background with magma halo */
@@ -43,7 +44,6 @@
         linear-gradient(180deg, var(--bg), var(--bg2));
       line-height:1.45;
     }
-
     .container{ max-width:1200px; margin:0 auto; }
 
     /* ===== Glass Card + Neon Glow ===== */
@@ -77,8 +77,7 @@
     /* ===== Ticker ===== */
     .ticker-wrap{
       width:100%; overflow:hidden; border-radius:12px; padding: 0; margin-bottom:14px;
-      position:relative;
-      border:1px solid var(--border);
+      position:relative; border:1px solid var(--border);
     }
     .ticker-neon{
       position:absolute; top:0; left:0; right:0; height:2px;
@@ -86,29 +85,20 @@
       box-shadow: 0 0 12px var(--glow-strong);
       filter: blur(.2px);
     }
-    .ticker{
-      display:inline-flex; align-items:center;
-      white-space:nowrap;
-      padding: 12px 0;
-      animation: ticker-move 35s linear infinite;
-    }
+    .ticker{ display:inline-flex; align-items:center; white-space:nowrap; padding: 12px 0; animation: ticker-move 35s linear infinite; }
     .ticker-item{ padding: 0 36px; font-size:.75rem; font-weight:700; display:flex; align-items:center; gap:6px; }
     @keyframes ticker-move { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ===== Summary Cards ===== */
     .summary-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:16px; position:relative; }
     @media (max-width: 680px){ .summary-grid{ grid-template-columns: repeat(2, 1fr); } }
-    .card{
-      padding:12px 10px; border-radius:16px; cursor:pointer; position:relative; z-index:1;
-      border-left: 4px solid rgba(255,255,255,0.05);
-    }
+    .card{ padding:12px 10px; border-radius:16px; cursor:pointer; position:relative; z-index:1; border-left: 4px solid rgba(255,255,255,0.05); }
     .card.active{ z-index: 999!important; box-shadow: 0 10px 50px rgba(0,0,0,0.55), 0 0 26px var(--glow-strong); border-color: transparent; }
     .card span{ color:var(--text-muted); font-size:.6rem; font-weight:800; text-transform:uppercase; display:block; margin-bottom:3px; letter-spacing:.3px; }
     .card .value{ font-size:.98rem; font-weight:900; letter-spacing:.2px; display:flex; align-items:baseline; gap:8px; }
     .card.up-card{ border-left-color: var(--up); }
     .card.down-card{ border-left-color: var(--down); }
 
-    /* Card dropdown (distribution) */
     .dist-container{
       display:none; position:absolute; left:0; right:0; top:100%;
       margin-top:8px; padding:10px; z-index:1000; box-sizing:border-box;
@@ -117,11 +107,7 @@
       box-shadow: 0 16px 36px rgba(0,0,0,0.45), 0 0 22px rgba(255,98,35,0.22);
     }
     .card.active .dist-container{ display:block; }
-    .dist-row{
-      display:flex; justify-content:space-between; align-items:center;
-      padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:.74rem; font-weight:700;
-      transition: background .2s ease;
-    }
+    .dist-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:.74rem; font-weight:700; transition: background .2s ease; }
     .dist-row:last-child{ border-bottom:0; }
     .dist-row:hover{ background: rgba(255,255,255,0.03); }
 
@@ -165,26 +151,42 @@
     /* Transitions */
     .value, .pct, .det-val{ transition: color .25s ease, transform .2s ease; }
     .asset-item:hover .value, .asset-item:hover .pct{ transform: translateY(-1px); }
+    .dist-row:hover { background: rgba(255,255,255,0.03); }
 
     /* Utility colors */
     .up{ color: var(--up); }
     .down{ color: var(--down); }
 
-    /* Apply glass to components */
-    .perf-box, .ticker-wrap, .chart-block, .market-block, .asset-item{ composes: glass; } /* (fallback below) */
-    .perf-box, .ticker-wrap, .chart-block, .market-block, .asset-item{
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), var(--card-bg);
-      border:1px solid var(--border);
-      border-radius:16px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 10px 36px rgba(0,0,0,0.35), 0 0 18px rgba(255,82,35,0.18);
+    /* ===== SEPET Grid (compact cards) ===== */
+    .sepet-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
+    .sepet-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+    @media (max-width: 680px){ .sepet-grid{ grid-template-columns: repeat(2, 1fr); } }
+    .sepet-card{
+      padding:12px; border-radius:14px; cursor:pointer; position:relative;
+      border-left:4px solid rgba(255,255,255,0.06);
     }
-    .card{ composes: glass; } /* (fallback below) */
-    .card{
+    .sepet-card.up-card{ border-left-color: var(--up); }
+    .sepet-card.down-card{ border-left-color: var(--down); }
+    .sepet-name{ font-size:.64rem; letter-spacing:.4px; color:#ffd1ae; font-weight:900; text-transform:uppercase; margin-bottom:6px; text-shadow:0 0 12px rgba(255,115,55,0.35); }
+    .sepet-val{ font-size:.95rem; font-weight:900; display:flex; align-items:baseline; gap:8px; }
+    .sepet-sub{ font-size:.68rem; color:var(--text-muted); margin-top:6px; }
+
+    /* ===== SEPET Summary (detail header) ===== */
+    .sepet-summary{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; margin: 0 0 12px 0; padding:12px;
+      border-radius:14px; border:1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong);
       box-shadow: 0 10px 36px rgba(0,0,0,0.4), 0 0 16px rgba(255,82,35,0.18);
     }
+    @media (max-width: 820px){ .sepet-summary{ grid-template-columns: 1fr; } }
+    .sepet-kpis{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+    @media (max-width: 680px){ .sepet-kpis{ grid-template-columns: repeat(2, 1fr); } }
+    .kpi{ background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:10px; }
+    .kpi .lbl{ font-size:.54rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; margin-bottom:4px; }
+    .kpi .val{ font-size:.9rem; font-weight:900; display:flex; align-items:baseline; gap:8px; }
+    .sepet-right{ padding:8px; display:flex; flex-direction:column; gap:8px; }
+    .mini-list .row{ display:flex; justify-content:space-between; font-size:.74rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .mini-list .row:last-child{ border-bottom:0; }
   </style>
 </head>
 <body>
@@ -215,8 +217,14 @@
     <div class="ticker" id="tickerContent">Veriler senkronize ediliyor...</div>
   </div>
 
-  <!-- Summary -->
+  <!-- Summary Cards -->
   <div class="summary-grid" id="summaryGrid"></div>
+
+  <!-- SEPETLER (Kompakt) -->
+  <div class="sepet-block glass">
+    <div class="market-header">SEPETLER — KOMPATK ÖZET</div>
+    <div class="sepet-grid" id="sepetGrid"></div>
+  </div>
 
   <!-- Chart -->
   <div class="chart-block glass">
@@ -230,18 +238,29 @@
     <div id="marketRows"></div>
   </div>
 
-  <!-- Asset Details -->
+  <!-- Details -->
   <div id="detailSection" style="display:none; padding-bottom:100px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding: 0 5px;">
-      <div id="detailTitle" style="font-weight:900; color:#ffd1ae; font-size:.82rem; text-shadow:0 0 16px rgba(255,115,55,0.45);">VARLIK ANALİZİ</div>
+      <div id="detailTitle" style="font-weight:900; color:#ffd1ae; font-size:.82rem; text-shadow:0 0 16px rgba(255,115,55,0.45);">ANALİZ</div>
       <div onclick="closeAll()" style="color:var(--down); font-size:.7rem; font-weight:bold; cursor:pointer;">[KAPAT]</div>
     </div>
+
+    <!-- Sepet Özeti (yalnızca sepet modunda görünür) -->
+    <div id="sepetSummaryWrap" class="sepet-summary" style="display:none;">
+      <div class="sepet-left">
+        <div class="sepet-kpis" id="sepetKpis"></div>
+      </div>
+      <div class="sepet-right">
+        <div style="font-size:.66rem; font-weight:900; color:#ffd1ae;">SEPET DAĞILIMI (TÜR)</div>
+        <div style="height:180px;"><canvas id="sepetChart"></canvas></div>
+        <div class="mini-list" id="sepetTopList"></div>
+      </div>
+    </div>
+
+    <!-- Varlık listesi -->
     <div id="assetGrid"></div>
   </div>
 </div>
-
-<!-- CSV Parse -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <script>
   /* ======= DATA SOURCE ======= */
@@ -249,6 +268,7 @@
 
   let globalData = [];
   let allocationChart = null;
+  let sepetChart = null;
 
   /* ======= HELPERS ======= */
   function clean(v) {
@@ -312,7 +332,8 @@
             gKZ: clean(r[9]),     // J
             hKZ: clean(r[10]),    // K
             aKZ: clean(r[11]),    // L
-            tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])) // ✔ P sütunu (index 15) + fallback
+            tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])), // ✔ P sütunu (index 15) + fallback
+            sepet: (r[18] && String(r[18]).trim()) ? String(r[18]).trim() : "Genel Sepet" // ✔ S sütunu (index 18)
           }));
 
         renderAll();
@@ -322,7 +343,7 @@
 
   /* ======= RENDER PIPELINE ======= */
   function renderAll() {
-    // Totals & groups
+    // Totals & groups by TÜR
     const totals = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0 };
     const groups = {};
     globalData.forEach(item => {
@@ -333,7 +354,16 @@
       });
     });
 
+    // Groups by SEPET
+    const sepetGroups = {};
+    globalData.forEach(item => {
+      const s = item.sepet || "Genel Sepet";
+      if (!sepetGroups[s]) sepetGroups[s] = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0 };
+      Object.keys(sepetGroups[s]).forEach(k => sepetGroups[s][k] += (item[k] || 0));
+    });
+
     renderSummaries(totals, groups);
+    renderSepetCards(sepetGroups);
     renderTicker();
     renderMarketRows();
     renderPerformance();
@@ -362,7 +392,7 @@
       // Percent on cards:
       // - tKZ: toplam getiri yüzdesi (tKZ / yatirim)
       // - gKZ/hKZ/aKZ: dönemsel yüzdeler (KZ / (tutar - KZ))
-      // - Portföy (tutar): toplam getiri yüzdesi (tKZ / yatirim) -> kullanıcı talebine uygun olarak eklendi
+      // - Portföy (tutar): toplam getiri yüzdesi (tKZ / yatirim)
       let p = null;
       if (k.id === 'tKZ' || k.id === 'tutar'){
         p = pctTotalKZ(totals.tKZ, totals.yatirim);
@@ -374,7 +404,7 @@
         ? ` <span class="${pctClass(p)}">${arrow(p)} ${fmtPct(p)}</span>`
         : '';
 
-      // Distribution list by type (each row also includes percent)
+      // Distribution by TÜR (each row includes percent)
       const sortedTur = Object.keys(groups).sort((a,b) => groups[b][k.id] - groups[a][k.id]);
 
       let distHtml = sortedTur.map(t => {
@@ -411,6 +441,35 @@
     }).join('');
   }
 
+  /* ======= SEPET CARDS (Compact) ======= */
+  function renderSepetCards(sepetGroups){
+    const grid = document.getElementById('sepetGrid');
+    const names = Object.keys(sepetGroups).sort((a,b) => (sepetGroups[b].tutar||0) - (sepetGroups[a].tutar||0));
+    grid.innerHTML = names.map(name => {
+      const g = sepetGroups[name];
+      const p = pctTotalKZ(g.tKZ, g.yatirim);
+
+      // En büyük varlık (sepet içi)
+      const items = globalData.filter(x => (x.sepet||"Genel Sepet") === name);
+      let topName = '-'; let share = 0;
+      if (items.length){
+        const top = items.slice().sort((a,b) => (b.tutar||0) - (a.tutar||0))[0];
+        topName = top?.ad || '-';
+        share = g.tutar ? (100 * (top.tutar||0) / g.tutar) : 0;
+      }
+
+      return `
+        <div class="sepet-card glass ${p>=0?'up-card':'down-card'}" onclick="showSepetDetails('${name.replace(/'/g,"\\'")}')">
+          <div class="sepet-name">${name}</div>
+          <div class="sepet-val ${g.tKZ>=0?'up':'down'}">
+            ${Number(g.tutar||0).toLocaleString('tr-TR')} ₺
+            <span class="${pctClass(p)}">${arrow(p)} ${fmtPct(p)}</span>
+          </div>
+          <div class="sepet-sub">En büyük: <b>${topName}</b> (${share.toFixed(1)}%)</div>
+        </div>`;
+    }).join('');
+  }
+
   /* ======= PERFORMANCE (Best/Worst) ======= */
   function renderPerformance() {
     const filtered = globalData.filter(d => (d.tutar || 0) > 50);
@@ -437,7 +496,7 @@
     }
   }
 
-  /* ======= CHART ======= */
+  /* ======= CHART (Type allocation) ======= */
   function updateChart(groups){
     const ctx = document.getElementById('allocationChart').getContext('2d');
     const labels = Object.keys(groups);
@@ -514,79 +573,173 @@
     ticker.style.animationDuration = `${Math.max(moves.length * 4, 25)}s`;
   }
 
-  /* ======= DETAILS ======= */
+  /* ======= DETAILS: by TÜR ======= */
   function showDetails(tur){
     const sect = document.getElementById("detailSection");
     const grid = document.getElementById("assetGrid");
+    const sumWrap = document.getElementById("sepetSummaryWrap");
+    sumWrap.style.display = "none"; // tür modunda gizle
     sect.style.display = "block";
     document.getElementById("detailTitle").innerText = `VARLIK ANALİZİ — ${tur}`;
 
     grid.innerHTML = globalData
       .filter(d => d.tur === tur)
       .sort((a,b) => (b.tutar || 0) - (a.tutar || 0))
-      .map(a => {
-        const pTotal = pctTotalKZ(a.tKZ, a.yatirim);
-        const pG = pctPeriodKZ(a.gKZ, a.tutar);
-        const pH = pctPeriodKZ(a.hKZ, a.tutar);
-        const pA = pctPeriodKZ(a.aKZ, a.tutar);
-
-        return `
-        <div class="asset-item glass">
-          <div class="asset-main" onclick="toggleAsset(this)">
-            <div style="font-weight:800; font-size:.82rem;">${a.ad}</div>
-            <div style="text-align:right">
-              <div class="${kzClass(a.tKZ)}" style="font-weight:900; font-size:.9rem;">
-                ${(a.tutar || 0).toLocaleString('tr-TR')} ₺
-                <span class="${pctClass(pTotal)}">(${arrow(pTotal)} ${fmtPct(pTotal)})</span>
-              </div>
-              <div class="${kzClass(a.tKZ)}" style="font-size:.62rem;">
-                ${(a.tKZ || 0).toLocaleString('tr-TR')} ₺
-              </div>
-            </div>
-          </div>
-          <div class="asset-expand">
-            <div class="det-box"><span class="det-lbl">Adet</span><span class="det-val">${(a.adet || 0).toLocaleString('tr-TR')}</span></div>
-            <div class="det-box"><span class="det-lbl">Alış Fiyatı</span><span class="det-val">${(a.aFiyat || 0).toLocaleString('tr-TR')}</span></div>
-            <div class="det-box"><span class="det-lbl">Yatırım</span><span class="det-val">${(a.yatirim || 0).toLocaleString('tr-TR')} ₺</span></div>
-            <div class="det-box"><span class="det-lbl">Süre</span><span class="det-val">${getDaysBetween(a.alisTarihi)}</span></div>
-
-            <div class="det-box">
-              <span class="det-lbl">Günlük K/Z</span>
-              <span class="det-val ${kzClass(a.gKZ)}">
-                ${(a.gKZ || 0).toLocaleString('tr-TR')} ₺
-                <span class="${pctClass(pG)}">${arrow(pG)} ${fmtPct(pG)}</span>
-              </span>
-            </div>
-
-            <div class="det-box">
-              <span class="det-lbl">Haftalık K/Z</span>
-              <span class="det-val ${kzClass(a.hKZ)}">
-                ${(a.hKZ || 0).toLocaleString('tr-TR')} ₺
-                <span class="${pctClass(pH)}">${arrow(pH)} ${fmtPct(pH)}</span>
-              </span>
-            </div>
-
-            <div class="det-box">
-              <span class="det-lbl">Aylık K/Z</span>
-              <span class="det-val ${kzClass(a.aKZ)}">
-                ${(a.aKZ || 0).toLocaleString('tr-TR')} ₺
-                <span class="${pctClass(pA)}">${arrow(pA)} ${fmtPct(pA)}</span>
-              </span>
-            </div>
-
-            <div class="det-box">
-              <span class="det-lbl">Toplam K/Z</span>
-              <span class="det-val ${kzClass(a.tKZ)}">
-                ${(a.tKZ || 0).toLocaleString('tr-TR')} ₺
-                <span class="${pctClass(pTotal)}">${arrow(pTotal)} ${fmtPct(pTotal)}</span>
-              </span>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
+      .map(a => assetItemTemplate(a))
+      .join('');
 
     sect.scrollIntoView({ behavior: 'smooth' });
   }
+
+  /* ======= DETAILS: by SEPET ======= */
+  function showSepetDetails(sepetName){
+    const sect = document.getElementById("detailSection");
+    const grid = document.getElementById("assetGrid");
+    const sumWrap = document.getElementById("sepetSummaryWrap");
+    sect.style.display = "block";
+    document.getElementById("detailTitle").innerText = `SEPET ANALİZİ — ${sepetName}`;
+
+    // Sepet toplamları
+    const items = globalData.filter(x => (x.sepet||"Genel Sepet") === sepetName);
+    const tot = items.reduce((acc, x) => {
+      acc.yatirim += x.yatirim||0; acc.tutar += x.tutar||0; acc.tKZ += x.tKZ||0;
+      acc.gKZ += x.gKZ||0; acc.hKZ += x.hKZ||0; acc.aKZ += x.aKZ||0;
+      return acc;
+    }, {yatirim:0,tutar:0,tKZ:0,gKZ:0,hKZ:0,aKZ:0});
+
+    // KPI ler
+    const pTotal = pctTotalKZ(tot.tKZ, tot.yatirim);
+    const pG = pctPeriodKZ(tot.gKZ, tot.tutar);
+    const pH = pctPeriodKZ(tot.hKZ, tot.tutar);
+    const pA = pctPeriodKZ(tot.aKZ, tot.tutar);
+
+    const kpi = (lbl, val, chipPct, isMoney=true) => `
+      <div class="kpi">
+        <div class="lbl">${lbl}</div>
+        <div class="val ${isMoney ? (val>=0?'up':'down') : ''}">
+          ${isMoney ? Number(val||0).toLocaleString('tr-TR') + ' ₺' : Number(val||0).toLocaleString('tr-TR')}
+          ${chipPct!==null ? `<span class="${pctClass(chipPct)}">${arrow(chipPct)} ${fmtPct(chipPct)}</span>` : ''}
+        </div>
+      </div>`;
+
+    document.getElementById('sepetKpis').innerHTML = [
+      kpi('Portföy', tot.tutar, pTotal),
+      kpi('Yatırım', tot.yatirim, null),
+      kpi('Toplam K/Z', tot.tKZ, pTotal),
+      kpi('Aylık K/Z', tot.aKZ, pA),
+      kpi('Haftalık K/Z', tot.hKZ, pH),
+      kpi('Günlük K/Z', tot.gKZ, pG),
+    ].join('');
+
+    // Sepet içi dağılım (TÜR)
+    const byTur = {};
+    items.forEach(x => {
+      if(!byTur[x.tur]) byTur[x.tur] = 0;
+      byTur[x.tur] += x.tutar||0;
+    });
+    const labels = Object.keys(byTur);
+    const data = labels.map(l => byTur[l]);
+
+    // Create/update sepetChart
+    const ctx = document.getElementById('sepetChart').getContext('2d');
+    if (sepetChart) sepetChart.destroy();
+    sepetChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: ['#ff7a1a','#ff3b2f','#ffa24c','#8b5cf6','#22d3ee','#06b6d4','#ec4899'],
+          borderWidth: 2, borderColor: '#0b0c10'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } }
+      }
+    });
+
+    // Top 3 varlık listesi
+    const top3 = items.slice().sort((a,b)=> (b.tutar||0)-(a.tutar||0)).slice(0,3);
+    document.getElementById('sepetTopList').innerHTML = top3.map(v=>{
+      const share = tot.tutar ? (100*(v.tutar||0)/tot.tutar) : 0;
+      return `<div class="row"><span>${v.ad}</span><span>${share.toFixed(1)}%</span></div>`;
+    }).join('');
+
+    sumWrap.style.display = "grid";
+
+    // Varlık listesi
+    document.getElementById("assetGrid").innerHTML = items
+      .slice().sort((a,b) => (b.tutar || 0) - (a.tutar || 0))
+      .map(a => assetItemTemplate(a)).join('');
+
+    sect.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /* ======= Asset item template ======= */
+  function assetItemTemplate(a){
+    const pTotal = pctTotalKZ(a.tKZ, a.yatirim);
+    const pG = pctPeriodKZ(a.gKZ, a.tutar);
+    const pH = pctPeriodKZ(a.hKZ, a.tutar);
+    const pA = pctPeriodKZ(a.aKZ, a.tutar);
+
+    return `
+      <div class="asset-item glass">
+        <div class="asset-main" onclick="toggleAsset(this)">
+          <div style="font-weight:800; font-size:.82rem;">${a.ad}</div>
+          <div style="text-align:right">
+            <div class="${kzClass(a.tKZ)}" style="font-weight:900; font-size:.9rem;">
+              ${(a.tutar || 0).toLocaleString('tr-TR')} ₺
+              <span class="${pctClass(pTotal)}">(${arrow(pTotal)} ${fmtPct(pTotal)})</span>
+            </div>
+            <div class="${kzClass(a.tKZ)}" style="font-size:.62rem;">
+              ${(a.tKZ || 0).toLocaleString('tr-TR')} ₺
+            </div>
+          </div>
+        </div>
+        <div class="asset-expand">
+          <div class="det-box"><span class="det-lbl">Sepet</span><span class="det-val">${a.sepet || 'Genel Sepet'}</span></div>
+          <div class="det-box"><span class="det-lbl">Tür</span><span class="det-val">${a.tur || '-'}</span></div>
+          <div class="det-box"><span class="det-lbl">Adet</span><span class="det-val">${(a.adet || 0).toLocaleString('tr-TR')}</span></div>
+          <div class="det-box"><span class="det-lbl">Alış Fiyatı</span><span class="det-val">${(a.aFiyat || 0).toLocaleString('tr-TR')}</span></div>
+          <div class="det-box"><span class="det-lbl">Yatırım</span><span class="det-val">${(a.yatirim || 0).toLocaleString('tr-TR')} ₺</span></div>
+          <div class="det-box"><span class="det-lbl">Süre</span><span class="det-val">${getDaysBetween(a.alisTarihi)}</span></div>
+
+          <div class="det-box">
+            <span class="det-lbl">Günlük K/Z</span>
+            <span class="det-val ${kzClass(a.gKZ)}">
+              ${(a.gKZ || 0).toLocaleString('tr-TR')} ₺
+              <span class="${pctClass(pPeriodSafe(a.gKZ,a.tutar))}">${arrow(pPeriodSafe(a.gKZ,a.tutar))} ${fmtPct(pPeriodSafe(a.gKZ,a.tutar))}</span>
+            </span>
+          </div>
+
+          <div class="det-box">
+            <span class="det-lbl">Haftalık K/Z</span>
+            <span class="det-val ${kzClass(a.hKZ)}">
+              ${(a.hKZ || 0).toLocaleString('tr-TR')} ₺
+              <span class="${pctClass(pPeriodSafe(a.hKZ,a.tutar))}">${arrow(pPeriodSafe(a.hKZ,a.tutar))} ${fmtPct(pPeriodSafe(a.hKZ,a.tutar))}</span>
+            </span>
+          </div>
+
+          <div class="det-box">
+            <span class="det-lbl">Aylık K/Z</span>
+            <span class="det-val ${kzClass(a.aKZ)}">
+              ${(a.aKZ || 0).toLocaleString('tr-TR')} ₺
+              <span class="${pctClass(pPeriodSafe(a.aKZ,a.tutar))}">${arrow(pPeriodSafe(a.aKZ,a.tutar))} ${fmtPct(pPeriodSafe(a.aKZ,a.tutar))}</span>
+            </span>
+          </div>
+
+          <div class="det-box">
+            <span class="det-lbl">Toplam K/Z</span>
+            <span class="det-val ${kzClass(a.tKZ)}">
+              ${(a.tKZ || 0).toLocaleString('tr-TR')} ₺
+              <span class="${pctClass(pTotal)}">${arrow(pTotal)} ${fmtPct(pTotal)}</span>
+            </span>
+          </div>
+        </div>
+      </div>`;
+  }
+  function pPeriodSafe(kz,tutar){ return pctPeriodKZ(kz||0, tutar||0); }
 
   /* ======= UI Helpers ======= */
   function toggleCard(el){
@@ -602,6 +755,7 @@
   }
   function closeAll(){
     document.getElementById('detailSection').style.display = 'none';
+    document.getElementById('sepetSummaryWrap').style.display = 'none';
     document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
   }
 
