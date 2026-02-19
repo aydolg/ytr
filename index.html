@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Elite Portföy Terminali v4.2 — Magma Crimson + Sepet Motoru</title>
+  <title>Elite Portföy Terminali v4.3 — Magma Crimson + Interaktif Sepetler</title>
 
   <!-- Fonts & Libraries -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -113,19 +113,26 @@
     .dist-row:last-child{ border-bottom:0; }
     .dist-row:hover{ background: rgba(255,255,255,0.03); }
 
-    /* ===== Market ===== */
-    .market-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
-    .market-header{
+    /* ===== SEPETLER — AÇILIR/KAPANIR ===== */
+    .sepet-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
+    .sepet-header{
+      display:flex; justify-content:space-between; align-items:center;
       padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px;
       border-bottom: 1px solid var(--border);
       text-shadow: 0 0 16px rgba(255,115,55,0.45);
+      cursor:pointer;
     }
-    .m-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
-    .m-row:last-child{ border-bottom:0; }
-
-    /* ===== Sepetler (Kompakt ama simetrik) ===== */
-    .sepet-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
-    .sepet-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+    .sepet-header::after{
+      content: '▼'; font-size:.6rem; transition: transform .3s ease;
+      color: var(--magma-2);
+    }
+    .sepet-block.collapsed .sepet-header::after{ transform: rotate(-90deg); }
+    .sepet-grid{ 
+      display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; 
+      max-height: 1000px; overflow: hidden; transition: max-height .4s ease, opacity .3s ease;
+      opacity: 1;
+    }
+    .sepet-block.collapsed .sepet-grid{ max-height: 0; opacity: 0; margin-top: 0; }
     @media (max-width: 680px){ .sepet-grid{ grid-template-columns: repeat(2, 1fr); } }
     .sepet-card{
       padding:12px 10px; border-radius:16px; cursor:pointer; position:relative;
@@ -138,10 +145,31 @@
     .sepet-card.up-card{ border-left-color: var(--up); }
     .sepet-card.down-card{ border-left-color: var(--down); }
     .sepet-name{ font-size:.6rem; letter-spacing:.4px; color:#ffd1ae; font-weight:900; text-transform:uppercase; margin-bottom:4px; text-shadow:0 0 12px rgba(255,115,55,0.35); }
-    /* Seçenek 3: Tutar büyük, yüzde minimal ve ince */
     .sepet-val{ font-size:.98rem; font-weight:900; display:flex; align-items:baseline; gap:8px; }
     .sepet-val .pct{ font-size:.70rem; font-weight:800; }
     .sepet-sub{ font-size:.68rem; color:var(--text-muted); margin-top:6px; }
+
+    /* ===== MARKET — AÇILIR/KAPANIR + YENİ TASARIM ===== */
+    .market-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
+    .market-header{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px;
+      border-bottom: 1px solid var(--border);
+      text-shadow: 0 0 16px rgba(255,115,55,0.45);
+      cursor:pointer;
+    }
+    .market-header::after{
+      content: '▼'; font-size:.6rem; transition: transform .3s ease;
+      color: var(--magma-2);
+    }
+    .market-block.collapsed .market-header::after{ transform: rotate(-90deg); }
+    .market-content{
+      max-height: 1000px; overflow: hidden; transition: max-height .4s ease, opacity .3s ease;
+      opacity: 1;
+    }
+    .market-block.collapsed .market-content{ max-height: 0; opacity: 0; }
+    .m-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .m-row:last-child{ border-bottom:0; }
 
     /* ===== Asset detail ===== */
     .asset-item{ margin-bottom:10px; overflow:hidden; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)) , var(--card-bg);
@@ -225,16 +253,18 @@
   <!-- Summary Cards -->
   <div class="summary-grid" id="summaryGrid"></div>
 
-  <!-- SEPETLER (Kompakt ama simetrik) -->
-  <div class="sepet-block glass">
-    <div class="market-header">SEPETLER — KOMPAKT ÖZET</div>
+  <!-- SEPETLER — AÇILIR/KAPANIR -->
+  <div class="sepet-block glass" id="sepetBlock">
+    <div class="market-header" onclick="toggleSepetBlock()">SEPETLER — KOMPAKT ÖZET</div>
     <div class="sepet-grid" id="sepetGrid"></div>
   </div>
 
-  <!-- Market -->
-  <div class="market-block glass">
-    <div class="market-header">GÜNCEL FİYATLAR</div>
-    <div id="marketRows"></div>
+  <!-- MARKET — AÇILIR/KAPANIR + PİYASALAR SAYFASINDAN VERİ -->
+  <div class="market-block glass collapsed" id="marketBlock">
+    <div class="market-header" onclick="toggleMarketBlock()">GÜNCEL FİYATLAR (TIKLA AÇ)</div>
+    <div class="market-content" id="marketContent">
+      <div id="marketRows"></div>
+    </div>
   </div>
 
   <!-- Details -->
@@ -262,10 +292,17 @@
 </div>
 
 <script>
-  /* ======= DATA SOURCE ======= */
-  const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTFovlKfvEp9sPepJb9SGxf_2AgMU7eEPTDCc6WWc0o1Z1AizX6K2mJlaWtcvSderiBym7cyhEdsC/pub?gid=0&single=true&output=csv";
+  /* ======= DATA SOURCES ======= */
+  // Ana portföy verisi (0. sayfa)
+  const csvUrlPortfolio = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTFovlKfvEp9sPepJb9SGxf_2AgMU7eEPTDCc6WWc0o1Z1AizX6K2mJlaWtcvSderiBym7cyhEdsC/pub?gid=0&single=true&output=csv";
+  
+  // Piyasalar verisi (Piyasalar sayfası - gid değerini kendi sayfanızdan almalısınız)
+  // Google Sheets'te Piyasalar sayfasına sağ tıklayıp "Sayfa bağlantısını kopyala" deyin, gid=XXXXX kısmını alın
+  const csvUrlPiyasalar = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTFovlKfvEp9sPepJb9SGxf_2AgMU7eEPTDCc6WWc0o1Z1AizX6K2mJlaWtcvSderiBym7cyhEdsC/pub?gid=1068816976&single=true&output=csv";
+  // NOT: Yukarıdaki gid=123456789 yerine kendi Piyasalar sayfanızın gid değerini yazın!
 
   let globalData = [];
+  let marketData = [];
   let sepetChart = null;
 
   /* ======= HELPERS ======= */
@@ -312,7 +349,8 @@
 
   /* ======= FETCH DATA ======= */
   function fetchData() {
-    Papa.parse(csvUrl, {
+    // 1. Portföy verisini çek
+    Papa.parse(csvUrlPortfolio, {
       download: true,
       complete: function(res) {
         globalData = res.data.slice(1)
@@ -330,10 +368,35 @@
             gKZ: clean(r[9]),     // J
             hKZ: clean(r[10]),    // K
             aKZ: clean(r[11]),    // L
-            tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])), // ✔ P sütunu (index 15) + fallback
-            sepet: (r[18] && String(r[18]).trim()) ? String(r[18]).trim() : "Genel Sepet" // ✔ S sütunu (index 18)
+            tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])), // P sütunu + fallback
+            sepet: (r[18] && String(r[18]).trim()) ? String(r[18]).trim() : "Genel Sepet" // S sütunu
           }));
 
+        // 2. Piyasalar verisini çek
+        fetchMarketData();
+      }
+    });
+  }
+
+  function fetchMarketData() {
+    Papa.parse(csvUrlPiyasalar, {
+      download: true,
+      complete: function(res) {
+        // A: Sembol/Ad, B: Fiyat, C: Değişim %
+        marketData = res.data.slice(1)
+          .filter(r => r[0] && r[0].trim() !== "")
+          .map(r => ({
+            ad: r[0]?.trim(),
+            fiyat: clean(r[1]),
+            degisim: clean(r[2]) // Yüzde değeri (pozitif/negatif)
+          }));
+        
+        renderAll();
+      },
+      error: function(err) {
+        console.warn("Piyasalar verisi çekilemedi, varsayılan veriler kullanılıyor:", err);
+        // Hata durumunda boş array ile devam et
+        marketData = [];
         renderAll();
       }
     });
@@ -363,9 +426,8 @@
     renderSummaries(totals, groups);
     renderSepetCards(sepetGroups);
     renderTicker();
-    renderMarketRows();
+    renderMarketRows(); // Artık Piyasalar sayfasından veri çekiyor
     renderPerformance();
-    // Ana ekran grafiği KALDIRILDI (updateChart çağrısı yok)
   }
 
   /* ======= SUMMARY CARDS ======= */
@@ -486,21 +548,25 @@
     }
   }
 
-  /* ======= MARKET ======= */
+  /* ======= MARKET — PİYASALAR SAYFASINDAN VERİ ======= */
   function renderMarketRows() {
-    const targets = ["USDTRY", "EURTRY", "ALTIN/USD", "ALTIN/TL", "GRAMALTIN", "ENFLASYON", "MEVDUAT"];
-    document.getElementById("marketRows").innerHTML = targets.map(name => {
-      let v = globalData.find(d => (d.ad || '').toUpperCase() === name.toUpperCase());
-      if(!v) return "";
+    const container = document.getElementById("marketRows");
+    
+    // Eğer Piyasalar verisi boşsa veya çekilemediyse
+    if (!marketData || marketData.length === 0) {
+      container.innerHTML = '<div class="m-row"><span style="color:var(--text-muted); font-size:.7rem;">Piyasalar verisi yüklenemedi. Lütfen gid parametresini kontrol edin.</span></div>';
+      return;
+    }
 
-      // Günlük yüzde (gKZ / (tutar - gKZ))
-      const p = pctPeriodKZ(v.gKZ || 0, v.tutar || 0);
+    container.innerHTML = marketData.map(item => {
+      const p = item.degisim || 0;
+      const isUp = p >= 0;
 
       return `
         <div class="m-row">
-          <span style="font-size:.75rem; font-weight:800;">${name}</span>
+          <span style="font-size:.75rem; font-weight:800;">${item.ad}</span>
           <span style="font-weight:900; font-family:monospace;">
-            <span class="${kzClass(v.gKZ)}">${(v.fiyat || 0).toLocaleString('tr-TR')}</span>
+            <span class="${isUp ? 'up' : 'down'}">${(item.fiyat || 0).toLocaleString('tr-TR')}</span>
             <span class="${pctClass(p)}">(${fmtPct(p)})</span>
           </span>
         </div>`;
@@ -703,6 +769,26 @@
     document.querySelectorAll('.card').forEach(c => { c.classList.remove('active'); c.style.zIndex = "1"; });
     if (!active) { el.classList.add('active'); el.style.zIndex = "999"; }
   }
+  
+  // Sepetler bloğunu aç/kapat
+  function toggleSepetBlock(){
+    const block = document.getElementById('sepetBlock');
+    block.classList.toggle('collapsed');
+  }
+  
+  // Piyasalar bloğunu aç/kapat
+  function toggleMarketBlock(){
+    const block = document.getElementById('marketBlock');
+    block.classList.toggle('collapsed');
+    // Başlık metnini güncelle
+    const header = block.querySelector('.market-header');
+    if (block.classList.contains('collapsed')) {
+      header.innerText = 'GÜNCEL FİYATLAR (TIKLA AÇ)';
+    } else {
+      header.innerText = 'GÜNCEL FİYATLAR (TIKLA KAPAT)';
+    }
+  }
+  
   function toggleAsset(el){
     const exp = el.parentElement.querySelector('.asset-expand');
     const open = exp.style.display === 'grid';
