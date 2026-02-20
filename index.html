@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Elite Portföy Terminali v5.0 — Gelişmiş</title>
+  <title>Elite Portföy Terminali v5.1 — Debug</title>
 
-  <!-- Fonts & Libraries -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
-    /* ===== THEME: Magma Crimson ===== */
     :root{
       --bg: #0a0b0f; --bg2: #0d0f16;
       --card-bg: rgba(17, 18, 26, 0.38); --card-bg-strong: rgba(20, 22, 30, 0.58);
@@ -25,7 +23,7 @@
       background: radial-gradient(1200px 600px at 80% 0%, rgba(255, 94, 31, 0.18), transparent 60%),
         radial-gradient(900px 600px at -10% 30%, rgba(255, 0, 43, 0.15), transparent 60%),
         linear-gradient(180deg, var(--bg), var(--bg2)); line-height:1.45;
-      touch-action: manipulation; /* Mobil gecikmeyi azalt */
+      touch-action: manipulation;
     }
     .container{ max-width:1200px; margin:0 auto; }
     .glass{
@@ -59,7 +57,7 @@
     .ticker{ 
       display:inline-flex; align-items:center; white-space:nowrap; padding: 12px 0; 
       animation: ticker-move 35s linear infinite;
-      will-change: transform; /* Performans optimizasyonu */
+      will-change: transform;
     }
     .ticker-item{ padding: 0 36px; font-size:.75rem; font-weight:700; display:flex; align-items:center; gap:6px; }
     @keyframes ticker-move { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
@@ -72,10 +70,11 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong); 
       box-shadow: 0 10px 36px rgba(0,0,0,0.4), 0 0 16px rgba(255,82,35,0.18);
       transition: all .25s ease;
+      min-height: 60px;
     }
     .card.active{ z-index: 999!important; box-shadow: 0 10px 50px rgba(0,0,0,0.55), 0 0 26px var(--glow-strong); }
     .card span{ color:var(--text-muted); font-size:.6rem; font-weight:800; text-transform:uppercase; display:block; margin-bottom:3px; letter-spacing:.3px; }
-    .card .value{ font-size:.98rem; font-weight:900; letter-spacing:.2px; display:flex; align-items:baseline; gap:8px; }
+    .card .value{ font-size:.98rem; font-weight:900; letter-spacing:.2px; display:flex; align-items:baseline; gap:8px; flex-wrap: wrap; }
     .card.up-card{ border-left-color: var(--up); }
     .card.down-card{ border-left-color: var(--down); }
     .dist-container{ 
@@ -91,7 +90,6 @@
     .dist-row:hover{ background: rgba(255,255,255,0.03); border-radius: 6px; padding-left: 6px; padding-right: 6px; }
     .dist-row:last-child{ border-bottom:0; }
 
-    /* SEPETLER */
     .sepet-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
     .sepet-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px; border-bottom: 1px solid var(--border); text-shadow: 0 0 16px rgba(255,115,55,0.45); cursor:pointer; user-select: none; }
     .sepet-header::after{ content: '▼'; font-size:.6rem; transition: transform .3s ease; color: var(--magma-2); }
@@ -114,7 +112,6 @@
     .sepet-val .pct{ font-size:.70rem; font-weight:800; }
     .sepet-sub{ font-size:.68rem; color:var(--text-muted); margin-top:6px; }
 
-    /* PİYASALAR */
     .market-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
     .market-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px; border-bottom: 1px solid var(--border); text-shadow: 0 0 16px rgba(255,115,55,0.45); cursor:pointer; user-select: none; }
     .market-header::after{ content: '▼'; font-size:.6rem; transition: transform .3s ease; color: var(--magma-2); }
@@ -140,7 +137,6 @@
     .pct.down-grad{ background: linear-gradient(90deg, #ff3b2f, #ff7a1a); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(255,75,60,0.25); }
     .up{ color: var(--up); } .down{ color: var(--down); }
 
-    /* SEPET ANALİZİ GELİŞMİŞ STİL */
     .sepet-summary{ display:grid; grid-template-columns: 1fr; gap:12px; margin: 0 0 12px 0; padding:12px; border-radius:14px; border:1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong); box-shadow: 0 10px 36px rgba(0,0,0,0.4); }
     .sepet-kpis{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom: 12px; }
     @media (max-width: 680px){ .sepet-kpis{ grid-template-columns: repeat(2, 1fr); } }
@@ -149,7 +145,6 @@
     .kpi .lbl{ font-size:.54rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; margin-bottom:4px; }
     .kpi .val{ font-size:.9rem; font-weight:900; display:flex; align-items:baseline; gap:8px; }
     
-    /* YENİ: SEPET GELİŞİM GRAFİĞİ */
     .sepet-chart-container{ 
       background: rgba(0,0,0,0.2); 
       border-radius: 12px; 
@@ -184,7 +179,6 @@
     .stat-mini .lbl{ font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
     .stat-mini .val{ font-size: 0.8rem; font-weight: 800; }
     
-    /* YENİ: SON GÜNCELLEME */
     .last-update{ 
       font-size: 0.6rem; 
       color: var(--text-muted); 
@@ -193,20 +187,45 @@
       padding: 10px;
       opacity: 0.7;
     }
-
-    /* YENİ: YÜKLENİYOR ANIMasyonu */
-    .skeleton{ 
-      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-      border-radius: 4px;
+    
+    /* DEBUG PANEL */
+    .debug-panel{
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.9);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      max-width: 300px;
+      max-height: 200px;
+      overflow: auto;
+      z-index: 9998;
+      display: none;
     }
-    @keyframes loading { 0%{background-position: 200% 0} 100%{background-position: -200% 0} }
+    .debug-panel.show{ display: block; }
+    .debug-toggle{
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 0.6rem;
+      cursor: pointer;
+      z-index: 9999;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
 
 <div id="statusBadge" class="status-badge status-warn">Bağlanıyor...</div>
+<button class="debug-toggle" onclick="toggleDebug()">🐛 Debug</button>
+<div id="debugPanel" class="debug-panel"></div>
 
 <div class="container">
 
@@ -232,10 +251,9 @@
 
   <!-- Summary Cards -->
   <div class="summary-grid" id="summaryGrid">
-    <!-- Skeleton loading -->
-    <div class="card skeleton" style="height: 60px;"></div>
-    <div class="card skeleton" style="height: 60px;"></div>
-    <div class="card skeleton" style="height: 60px;"></div>
+    <div class="card" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.7rem;">
+      Yükleniyor...
+    </div>
   </div>
 
   <!-- SEPETLER -->
@@ -259,11 +277,9 @@
       <div onclick="closeAll()" style="color:var(--down); font-size:.7rem; font-weight:bold; cursor:pointer; padding: 5px 10px; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,77,109,0.1)'" onmouseout="this.style.background='transparent'">[KAPAT]</div>
     </div>
     
-    <!-- SEPET ANALİZİ GELİŞMİŞ VERSİYON -->
     <div id="sepetSummaryWrap" class="sepet-summary" style="display:none;">
       <div class="sepet-kpis" id="sepetKpis"></div>
       
-      <!-- YENİ: ZAMAN İÇİNDE SEPET GELİŞİMİ GRAFİĞİ -->
       <div class="sepet-chart-container">
         <div class="chart-title">
           <span>📈 SEPET GELİŞİMİ (ZAMAN ÇİZELGESİ)</span>
@@ -275,9 +291,7 @@
         <div style="height:220px; position: relative;">
           <canvas id="sepetChart"></canvas>
         </div>
-        <div class="sepet-stats-row" id="sepetStatsRow">
-          <!-- Dinamik olarak doldurulacak -->
-        </div>
+        <div class="sepet-stats-row" id="sepetStatsRow"></div>
       </div>
       
       <div id="sepetTopList" style="margin-top:12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border);"></div>
@@ -291,26 +305,63 @@
 
 <script>
   /* ======= CONFIG ======= */
-  // Sheet ID güvenlik için prompt ile alınabilir veya burada sabit kalabilir
   const SHEET_ID = "2PACX-1vQeTFovlKfvEp9sPepJb9SGxf_2AgMU7eEPTDCc6WWc0o1Z1AizX6K2mJlaWtcvSderiBym7cyhEdsC";
   const GID_PORTFOLIO = 0;
   const GID_PIYASALAR = 1068816976;
   
   let globalData = [], marketData = [], sepetChart = null;
   let lastFetchTime = null;
+  let debugMode = false;
+
+  /* ======= DEBUG ======= */
+  const log = (msg, data) => {
+    if (!debugMode) return;
+    const panel = document.getElementById('debugPanel');
+    const entry = document.createElement('div');
+    entry.style.marginBottom = '5px';
+    entry.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+    entry.style.paddingBottom = '5px';
+    entry.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${msg}<br><pre style="margin:3px 0; font-size:0.6rem; color:#aaa;">${data ? JSON.stringify(data, null, 2).substring(0, 200) : ''}</pre>`;
+    panel.appendChild(entry);
+    panel.scrollTop = panel.scrollHeight;
+  };
+
+  const toggleDebug = () => {
+    debugMode = !debugMode;
+    document.getElementById('debugPanel').classList.toggle('show');
+  };
 
   /* ======= HELPERS ======= */
   const clean = v => {
-    if (!v || v === "" || v.toString().includes('#N/A') || v.toString().includes('#REF!')) return 0;
-    // Türkçe format: 1.234,56 -> 1234.56
-    const cleaned = v.toString().replace(/\s/g,'').replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]+/g, '');
-    return parseFloat(cleaned) || 0;
+    if (!v || v === "" || v.toString().includes('#N/A') || v.toString().includes('#REF!') || v.toString().includes('#DIV/0!')) return 0;
+    const str = v.toString().trim();
+    // Binlik ayraç ve ondalık işleme
+    if (str.includes(',') && str.includes('.')) {
+      // 1,234.56 veya 1.234,56 olabilir
+      const lastComma = str.lastIndexOf(',');
+      const lastDot = str.lastIndexOf('.');
+      if (lastComma > lastDot) {
+        // Türkçe: 1.234,56
+        return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0;
+      } else {
+        // İngilizce: 1,234.56
+        return parseFloat(str.replace(/,/g, '')) || 0;
+      }
+    }
+    // Sadece virgül varsa (ondalık)
+    if (str.includes(',') && !str.includes('.')) {
+      const parts = str.split(',');
+      if (parts.length === 2 && parts[1].length <= 2) {
+        return parseFloat(str.replace(',', '.')) || 0;
+      }
+      return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0;
+    }
+    return parseFloat(str.replace(/[^0-9.-]+/g, '')) || 0;
   };
   
   const getDaysBetween = dateStr => {
     if (!dateStr || dateStr.length < 5) return "-";
     try {
-      // Farklı tarih formatlarını destekle
       let d, m, y;
       if (dateStr.includes('.')) {
         [d, m, y] = dateStr.split('.');
@@ -321,7 +372,6 @@
       } else {
         return "-";
       }
-      // 2 haneli yıl kontrolü
       if (y.length === 2) y = '20' + y;
       const targetDate = new Date(y, m-1, d);
       if (isNaN(targetDate.getTime())) return "-";
@@ -330,13 +380,20 @@
     } catch(e) { return "-"; }
   };
   
-  const fmtPct = p => `${p > 0 ? "+" : (p < 0 ? "−" : "")}%${Math.abs(p).toFixed(2)}`;
+  const fmtPct = p => {
+    if (!isFinite(p) || isNaN(p)) return "%0.00";
+    return `${p > 0 ? "+" : (p < 0 ? "−" : "")}%${Math.abs(p).toFixed(2)}`;
+  };
   const pctClass = p => p >= 0 ? 'pct up-grad' : 'pct down-grad';
   const kzClass = v => v >= 0 ? 'up' : 'down';
-  const pctTotalKZ = (kz, yatirim) => yatirim ? (kz / yatirim) * 100 : 0;
+  const pctTotalKZ = (kz, yatirim) => {
+    if (!yatirim || yatirim === 0) return 0;
+    return (kz / yatirim) * 100;
+  };
   const pctPeriodKZ = (kz, tutar) => {
     const d = tutar - kz;
-    return d ? (kz / d) * 100 : 0;
+    if (!d || d === 0) return 0;
+    return (kz / d) * 100;
   };
 
   const formatDate = (date) => {
@@ -364,39 +421,57 @@
   /* ======= FETCH ======= */
   const fetchData = async () => {
     setStatus('Portföy yükleniyor...', 'warn');
+    log('Fetch başladı', { sheetId: SHEET_ID });
     
     try {
       await new Promise((resolve, reject) => {
-        Papa.parse(`https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PORTFOLIO}&single=true&output=csv`, {
+        const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PORTFOLIO}&single=true&output=csv`;
+        log('URL', url);
+        
+        Papa.parse(url, {
           download: true,
           complete: res => {
+            log('Raw data satır sayısı', res.data.length);
+            log('İlk satır (header)', res.data[0]);
+            log('Örnek veri satırı', res.data[1]);
+            
             if (!res.data || res.data.length < 2) {
               reject('Boş veri');
               return;
             }
+            
+            // Header'ı atla, veri satırlarını işle
             globalData = res.data.slice(1)
-              .filter(r => r[0] && r[0] !== "Varlık" && r[0].trim() !== "")
-              .map(r => ({
-                ad: r[0]?.trim(), 
-                tur: r[1]?.trim(), 
-                alisTarihi: r[2], 
-                vade: r[3],
-                adet: clean(r[4]), 
-                aFiyat: clean(r[5]), 
-                yatirim: clean(r[6]),
-                fiyat: clean(r[7]), 
-                tutar: clean(r[8]), 
-                gKZ: clean(r[9]),
-                hKZ: clean(r[10]), 
-                aKZ: clean(r[11]),
-                tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])),
-                sepet: r[18]?.trim() || "Genel Sepet",
-                // YENİ: Tarih bazlı geçmiş veri simülasyonu için
-                alisTarihiObj: parseDate(r[2])
-              }));
+              .filter(r => r[0] && r[0].trim() !== "" && r[0] !== "Varlık")
+              .map((r, idx) => {
+                const item = {
+                  ad: r[0]?.trim(), 
+                  tur: r[1]?.trim(), 
+                  alisTarihi: r[2], 
+                  vade: r[3],
+                  adet: clean(r[4]), 
+                  aFiyat: clean(r[5]), 
+                  yatirim: clean(r[6]),
+                  fiyat: clean(r[7]), 
+                  tutar: clean(r[8]), 
+                  gKZ: clean(r[9]),
+                  hKZ: clean(r[10]), 
+                  aKZ: clean(r[11]),
+                  tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])),
+                  sepet: r[18]?.trim() || "Genel Sepet",
+                  alisTarihiObj: parseDate(r[2])
+                };
+                if (idx < 3) log(`Item ${idx}`, item);
+                return item;
+              });
+            
+            log('İşlenen veri sayısı', globalData.length);
             resolve();
           },
-          error: err => reject(err)
+          error: err => {
+            log('Parse hatası', err);
+            reject(err);
+          }
         });
       });
       
@@ -406,6 +481,7 @@
       
     } catch (err) {
       console.error('Fetch hatası:', err);
+      log('HATA', err.toString());
       setStatus('Veri çekilemedi', 'err');
     }
   };
@@ -454,23 +530,63 @@
 
   /* ======= RENDER ======= */
   const renderAll = () => {
+    log('renderAll başladı', { dataLength: globalData.length });
+    
+    if (globalData.length === 0) {
+      log('UYARI: globalData boş!');
+      document.getElementById('summaryGrid').innerHTML = '<div class="card" style="grid-column: span 3; text-align: center; color: var(--down);">Veri yüklenemedi</div>';
+      return;
+    }
+
+    // Önce totals'ı hesapla - BAĞIMSIZ olarak
     const totals = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0 };
-    const groups = {}, sepetGroups = {};
+    
+    globalData.forEach((item, idx) => {
+      totals.yatirim += (item.yatirim || 0);
+      totals.tutar += (item.tutar || 0);
+      totals.tKZ += (item.tKZ || 0);
+      totals.gKZ += (item.gKZ || 0);
+      totals.hKZ += (item.hKZ || 0);
+      totals.aKZ += (item.aKZ || 0);
+      
+      if (idx < 3) log(`Totals hesaplama ${idx}`, { 
+        yatirim: item.yatirim, 
+        tutar: item.tutar,
+        runningTotal: totals 
+      });
+    });
+
+    log('Final totals', totals);
+
+    // Grupları ayrı hesapla
+    const groups = {};
+    const sepetGroups = {};
     
     globalData.forEach(item => {
+      // Tür grupları
       if (!groups[item.tur]) groups[item.tur] = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0, items: [] };
-      Object.keys(totals).forEach(k => {
-        groups[item.tur][k] += item[k] || 0;
-      });
+      groups[item.tur].yatirim += (item.yatirim || 0);
+      groups[item.tur].tutar += (item.tutar || 0);
+      groups[item.tur].tKZ += (item.tKZ || 0);
+      groups[item.tur].gKZ += (item.gKZ || 0);
+      groups[item.tur].hKZ += (item.hKZ || 0);
+      groups[item.tur].aKZ += (item.aKZ || 0);
       groups[item.tur].items.push(item);
       
+      // Sepet grupları
       const s = item.sepet || "Genel Sepet";
       if (!sepetGroups[s]) sepetGroups[s] = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0, items: [] };
-      Object.keys(sepetGroups[s]).forEach(k => {
-        if (k !== 'items') sepetGroups[s][k] += item[k] || 0;
-      });
+      sepetGroups[s].yatirim += (item.yatirim || 0);
+      sepetGroups[s].tutar += (item.tutar || 0);
+      sepetGroups[s].tKZ += (item.tKZ || 0);
+      sepetGroups[s].gKZ += (item.gKZ || 0);
+      sepetGroups[s].hKZ += (item.hKZ || 0);
+      sepetGroups[s].aKZ += (item.aKZ || 0);
       sepetGroups[s].items.push(item);
     });
+
+    log('Groups sayısı', Object.keys(groups).length);
+    log('Sepet sayısı', Object.keys(sepetGroups).length);
 
     renderSummaries(totals, groups);
     renderSepetCards(sepetGroups);
@@ -480,26 +596,41 @@
   };
 
   const renderSummaries = (totals, groups) => {
+    log('renderSummaries', totals);
+    
     const keys = [
-      {id:'yatirim', l:'Yatırım'}, {id:'tutar', l:'Portföy'},
-      {id:'tKZ', l:'Toplam K/Z'}, {id:'gKZ', l:'Günlük K/Z'},
-      {id:'hKZ', l:'Haftalık K/Z'}, {id:'aKZ', l:'Aylık K/Z'}
+      {id:'yatirim', l:'Yatırım'}, 
+      {id:'tutar', l:'Portföy'},
+      {id:'tKZ', l:'Toplam K/Z'}, 
+      {id:'gKZ', l:'Günlük K/Z'},
+      {id:'hKZ', l:'Haftalık K/Z'}, 
+      {id:'aKZ', l:'Aylık K/Z'}
     ];
 
-    document.getElementById("summaryGrid").innerHTML = keys.map(k => {
-      const val = totals[k.id], isKZ = k.id.includes('KZ');
+    const html = keys.map(k => {
+      const val = totals[k.id] || 0;
+      const isKZ = k.id.includes('KZ');
       let p = null;
-      if (['tKZ','tutar'].includes(k.id)) p = pctTotalKZ(totals.tKZ, totals.yatirim);
-      else if (['gKZ','hKZ','aKZ'].includes(k.id)) p = pctPeriodKZ(totals[k.id], totals.tutar);
       
+      if (k.id === 'tKZ' || k.id === 'tutar') {
+        p = pctTotalKZ(totals.tKZ, totals.yatirim);
+      } else if (['gKZ','hKZ','aKZ'].includes(k.id)) {
+        p = pctPeriodKZ(totals[k.id], totals.tutar);
+      }
+      
+      log(`Kart ${k.l}`, { val, p, isKZ });
+
       const distHtml = Object.keys(groups)
         .sort((a,b) => groups[b][k.id] - groups[a][k.id])
-        .slice(0, 8) // Max 8 öğe göster
+        .slice(0, 8)
         .map(t => {
-          const v = groups[t][k.id];
+          const v = groups[t][k.id] || 0;
           let p2 = null;
-          if (['tKZ','tutar'].includes(k.id)) p2 = pctTotalKZ(groups[t].tKZ, groups[t].yatirim);
-          else if (['gKZ','hKZ','aKZ'].includes(k.id)) p2 = pctPeriodKZ(v, groups[t].tutar);
+          if (k.id === 'tKZ' || k.id === 'tutar') {
+            p2 = pctTotalKZ(groups[t].tKZ, groups[t].yatirim);
+          } else if (['gKZ','hKZ','aKZ'].includes(k.id)) {
+            p2 = pctPeriodKZ(v, groups[t].tutar);
+          }
           return `<div class="dist-row" onclick="event.stopPropagation(); showDetails('${t}')">
             <span>${t}</span>
             <span class="${isKZ ? kzClass(v) : ''}">
@@ -518,17 +649,19 @@
         <div class="dist-container">${distHtml}</div>
       </div>`;
     }).join('');
+
+    document.getElementById("summaryGrid").innerHTML = html;
+    log('Summary HTML render edildi', html.substring(0, 200));
   };
 
   const renderSepetCards = sepetGroups => {
     document.getElementById('sepetGrid').innerHTML = Object.keys(sepetGroups)
       .sort((a,b) => (sepetGroups[b].tutar||0) - (sepetGroups[a].tutar||0))
       .map(name => {
-        const g = sepetGroups[name], p = pctTotalKZ(g.tKZ, g.yatirim);
+        const g = sepetGroups[name];
+        const p = pctTotalKZ(g.tKZ, g.yatirim);
         const top = g.items.sort((a,b) => (b.tutar||0) - (a.tutar||0))[0];
         const share = g.tutar && top ? (100 * (top.tutar||0) / g.tutar) : 0;
-        
-        // Sepet çeşitliliği göstergesi
         const variety = g.items.length;
         const uniqueTypes = [...new Set(g.items.map(x => x.tur))].length;
         
@@ -588,7 +721,7 @@
     const moves = globalData
       .filter(a => (a.tutar || 0) > 10)
       .sort((a,b) => Math.abs(pctPeriodKZ(b.gKZ, b.tutar)) - Math.abs(pctPeriodKZ(a.gKZ, a.tutar)))
-      .slice(0, 15) // İlk 15 hareketli
+      .slice(0, 15)
       .map(a => {
         const p = pctPeriodKZ(a.gKZ, a.tutar);
         const icon = p > 5 ? '🔥' : p < -5 ? '❄️' : '';
@@ -611,7 +744,6 @@
     
     const items = globalData.filter(d => d.tur === tur).sort((a,b) => (b.tutar || 0) - (a.tutar || 0));
     
-    // Tür özet istatistikleri
     const tot = items.reduce((acc, x) => {
       ['yatirim','tutar','tKZ','gKZ','hKZ','aKZ'].forEach(k => acc[k] += x[k]||0);
       return acc;
@@ -667,10 +799,8 @@
       kpi('Haftalık', tot.hKZ, pH) + 
       kpi('Aylık', tot.aKZ, pA);
 
-    // YENİ: SEPET GELİŞİM GRAFİĞİ (Line Chart)
     renderSepetGrowthChart(items, tot);
     
-    // İstatistikler
     const avgDays = Math.round(items.reduce((acc, x) => {
       const days = parseInt(getDaysBetween(x.alisTarihi));
       return acc + (isNaN(days) ? 0 : days);
@@ -698,7 +828,6 @@
       </div>
     `;
 
-    // Top 3 varlık
     document.getElementById('sepetTopList').innerHTML = `
       <div style="font-size: .65rem; font-weight: 900; color: #ffd1ae; margin-bottom: 8px; text-transform: uppercase;">🎯 En Büyük 3 Varlık</div>
       ${items.sort((a,b) => (b.tutar||0)-(a.tutar||0)).slice(0,3).map((v, i) => {
@@ -720,7 +849,6 @@
     document.getElementById("detailSection").scrollIntoView({ behavior: 'smooth' });
   };
 
-  // YENİ: SEPET GELİŞİM GRAFİĞİ FONKSİYONU
   const renderSepetGrowthChart = (items, totals) => {
     const ctx = document.getElementById('sepetChart').getContext('2d');
     
@@ -729,36 +857,30 @@
       sepetChart = null;
     }
     
-    // Alış tarihlerine göre sırala ve kümülatif değer hesapla
     const sortedItems = [...items].sort((a, b) => {
       const dateA = a.alisTarihiObj || new Date(0);
       const dateB = b.alisTarihiObj || new Date(0);
       return dateA - dateB;
     });
     
-    // Eğer tarih yoksa veya tek tarih varsa, simülasyon verisi oluştur
     const labels = [];
     const yatirimData = [];
     const degerData = [];
     
     if (sortedItems.length === 0 || !sortedItems[0].alisTarihiObj) {
-      // Demo veri: Son 30 gün
       for (let i = 29; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         labels.push(date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }));
-        
-        // Rastgele dalgalanma ekle
         const fluctuation = 1 + (Math.sin(i * 0.5) * 0.05) + (Math.random() * 0.02 - 0.01);
         yatirimData.push(totals.yatirim);
         degerData.push(totals.tutar * fluctuation);
       }
     } else {
-      // Gerçek veri: Alış tarihlerini kullan
       let cumYatirim = 0;
       let cumDeger = 0;
       
-      sortedItems.forEach((item, index) => {
+      sortedItems.forEach((item) => {
         cumYatirim += item.yatirim;
         cumDeger += item.tutar;
         
@@ -768,7 +890,6 @@
         degerData.push(cumDeger);
       });
       
-      // Güncel değeri son nokta olarak ekle
       if (labels[labels.length - 1] !== 'Bugün') {
         labels.push('Bugün');
         yatirimData.push(totals.yatirim);
@@ -776,7 +897,6 @@
       }
     }
     
-    // Gradient oluştur
     const gradientYatirim = ctx.createLinearGradient(0, 0, 0, 220);
     gradientYatirim.addColorStop(0, 'rgba(23, 241, 167, 0.3)');
     gradientYatirim.addColorStop(1, 'rgba(23, 241, 167, 0.0)');
@@ -798,6 +918,7 @@
             borderWidth: 2,
             fill: true,
             tension: 0.4,
+            pointRadius: 3,
             pointRadius: 3,
             pointBackgroundColor: '#17f1a7',
             pointBorderColor: '#0a0b0f',
@@ -991,16 +1112,14 @@
     }
   };
 
-  // Klavye kısayolları
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeAll();
   });
 
   /* ======= INIT ======= */
   fetchData();
-  setInterval(fetchData, 300000); // 5 dakika
+  setInterval(fetchData, 300000);
   
-  // Sayfa görünür olduğunda güncelle
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && lastFetchTime && (new Date() - lastFetchTime > 300000)) {
       fetchData();
