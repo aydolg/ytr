@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Elite Portföy Terminali v5.2</title>
+  <title>Elite Portföy Terminali v5.5</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -52,8 +52,9 @@
     .ticker-item{ padding: 0 36px; font-size:.75rem; font-weight:700; display:flex; align-items:center; gap:6px; }
     @keyframes ticker-move { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    .summary-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:16px; }
-    @media (max-width: 680px){ .summary-grid{ grid-template-columns: repeat(2, 1fr); } }
+    .summary-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:16px; }
+    @media (max-width: 900px){ .summary-grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px){ .summary-grid{ grid-template-columns: 1fr; } }
     .card{ 
       padding:12px 10px; border-radius:16px; cursor:pointer; position:relative; z-index:1; 
       border-left: 4px solid rgba(255,255,255,0.05); 
@@ -130,47 +131,11 @@
     .stat-mini .val{ font-size: 0.8rem; font-weight: 800; }
     
     .last-update{ font-size: 0.6rem; color: var(--text-muted); text-align: center; margin-top: 20px; padding: 10px; opacity: 0.7; }
-    
-    /* DEBUG */
-    .debug-box{
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.95);
-      border: 2px solid var(--magma-2);
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 0.7rem;
-      color: #fff;
-      max-height: 150px;
-      overflow-y: auto;
-      z-index: 10000;
-      display: none;
-      font-family: monospace;
-    }
-    .debug-box.show{ display: block; }
-    .debug-btn{
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      background: var(--magma-2);
-      color: #000;
-      border: none;
-      border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 0.65rem;
-      font-weight: 800;
-      cursor: pointer;
-      z-index: 10001;
-    }
   </style>
 </head>
 <body>
 
 <div id="statusBadge" class="status-badge status-warn">Bağlanıyor...</div>
-<button class="debug-btn" onclick="toggleDebug()">DEBUG</button>
-<div id="debugBox" class="debug-box"></div>
 
 <div class="container">
 
@@ -239,64 +204,31 @@
   let globalData = [];
   let marketData = [];
   let sepetChart = null;
-  let debugActive = false;
 
   // ==========================================
-  // DEBUG FONKSİYONLARI
+  // YARDIMCILAR
   // ==========================================
-  function toggleDebug() {
-    debugActive = !debugActive;
-    document.getElementById('debugBox').classList.toggle('show');
-    if (debugActive) {
-      updateDebug();
-    }
+  
+  function fmtMoney(num) {
+    if (!num && num !== 0) return '-';
+    return num.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ₺';
+  }
+  
+  function fmtInt(num) {
+    if (!num && num !== 0) return '-';
+    return Math.round(num).toLocaleString('tr-TR');
   }
 
-  function debug(msg) {
-    if (!debugActive) return;
-    const box = document.getElementById('debugBox');
-    const line = document.createElement('div');
-    line.textContent = new Date().toLocaleTimeString() + ' | ' + msg;
-    box.appendChild(line);
-    box.scrollTop = box.scrollHeight;
-    if (box.children.length > 50) box.removeChild(box.firstChild);
-  }
-
-  function updateDebug() {
-    if (!debugActive) return;
-    const box = document.getElementById('debugBox');
-    box.innerHTML = '';
-    debug('Global data count: ' + globalData.length);
-    if (globalData.length > 0) {
-      debug('Örnek: ' + globalData[0].ad + ' | Yatırım:' + globalData[0].yatirim + ' | Tutar:' + globalData[0].tutar);
-      const totals = calculateTotals();
-      debug('TOPLAM Yatırım: ' + totals.yatirim);
-      debug('TOPLAM Tutar: ' + totals.tutar);
-      debug('TOPLAM K/Z: ' + totals.tKZ);
-    }
-  }
-
-  // ==========================================
-  // YARDIMCI FONKSİYONLAR
-  // ==========================================
   function clean(value) {
-  if (!value || value === '' || value === '-') return 0;
-  let str = value.toString().trim();
-  
-  // Önce binlik ayraçları (nokta) kaldır, sonra ondalık virgülü noktaya çevir
-  // Türkçe: 96.550,00 -> 96550.00
-  // Türkçe: 1.234,56 -> 1234.56
-  
-  str = str.replace(/\./g, '');      // Binlik noktaları kaldır
-  str = str.replace(/,/g, '.');      // Ondalık virgülü noktaya çevir
-  str = str.replace(/[^0-9.-]/g, ''); // Sadece sayı, nokta, eksi kal
-  
-  const result = parseFloat(str);
-  return isNaN(result) ? 0 : result;
-  }
-
-  function fmt(num) {
-    return num.toLocaleString('tr-TR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    if (!value || value === '' || value === '-') return 0;
+    let str = value.toString().trim();
+    
+    str = str.replace(/\./g, '');      
+    str = str.replace(/,/g, '.');       
+    str = str.replace(/[^0-9.-]/g, ''); 
+    
+    const result = parseFloat(str);
+    return isNaN(result) ? 0 : result;
   }
 
   function fmtPct(p) {
@@ -348,23 +280,18 @@
   // VERİ ÇEKME
   // ==========================================
   function fetchData() {
-    debug('Veri çekme başladı...');
     setStatus('Yükleniyor...', 'warn');
     
     const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PORTFOLIO}&single=true&output=csv`;
-    debug('URL: ' + url.substring(0, 80) + '...');
     
     Papa.parse(url, {
       download: true,
       complete: function(results) {
-        debug('CSV yüklendi, satır: ' + results.data.length);
-        
         if (!results.data || results.data.length < 2) {
           setStatus('Veri yok', 'err');
           return;
         }
         
-        // Header'ı atla (ilk satır)
         const rows = results.data.slice(1);
         globalData = [];
         
@@ -388,23 +315,16 @@
             sepet: r[18]?.trim() || "Genel Sepet"
           };
           
-          // Hesaplanan alanlar
           if (item.tKZ === 0 && item.tutar > 0 && item.yatirim > 0) {
             item.tKZ = item.tutar - item.yatirim;
           }
           
           globalData.push(item);
-          
-          if (i < 3) {
-            debug('Item ' + i + ': ' + item.ad + ' Yatırım=' + item.yatirim + ' Tutar=' + item.tutar);
-          }
         }
         
-        debug('İşlenen kayıt: ' + globalData.length);
         fetchMarketData();
       },
       error: function(err) {
-        debug('HATA: ' + err);
         setStatus('Hata', 'err');
       }
     });
@@ -425,7 +345,6 @@
           }));
         setStatus('Bağlandı', 'ok');
         renderAll();
-        updateDebug();
       },
       error: function() {
         marketData = [];
@@ -445,22 +364,17 @@
   // RENDER
   // ==========================================
   function renderAll() {
-    debug('renderAll() başladı, kayıt: ' + globalData.length);
-    
     if (globalData.length === 0) {
-      document.getElementById('summaryGrid').innerHTML = '<div class="card" style="grid-column: span 3; text-align: center;">Veri yok</div>';
+      document.getElementById('summaryGrid').innerHTML = '<div class="card" style="grid-column: span 4; text-align: center;">Veri yok</div>';
       return;
     }
     
     const totals = calculateTotals();
-    debug('Totals: Yatırım=' + totals.yatirim + ' Tutar=' + totals.tutar + ' K/Z=' + totals.tKZ);
-    
-    // Gruplar
+
     const groups = {};
     const sepetGroups = {};
     
     for (let item of globalData) {
-      // Tür grupları
       if (!groups[item.tur]) {
         groups[item.tur] = { yatirim: 0, tutar: 0, tKZ: 0, gKZ: 0, hKZ: 0, aKZ: 0, items: [] };
       }
@@ -472,7 +386,6 @@
       groups[item.tur].aKZ += item.aKZ;
       groups[item.tur].items.push(item);
       
-      // Sepet grupları
       const s = item.sepet || "Genel Sepet";
       if (!sepetGroups[s]) {
         sepetGroups[s] = { yatirim: 0, tutar: 0, tKZ: 0, gKZ: 0, hKZ: 0, aKZ: 0, items: [] };
@@ -497,8 +410,8 @@
 
   function renderSummaries(totals, groups) {
     const keys = [
-      {id: 'yatirim', label: 'Yatırım', isMoney: true, isKZ: false},
-      {id: 'tutar', label: 'Portföy', isMoney: true, isKZ: false},
+      {id: 'yatirim', label: 'YATIRIM', isMoney: true, isKZ: false},
+      {id: 'tutar', label: 'PORTFÖY', isMoney: true, isKZ: false},
       {id: 'tKZ', label: 'Toplam K/Z', isMoney: true, isKZ: true},
       {id: 'gKZ', label: 'Günlük K/Z', isMoney: true, isKZ: true},
       {id: 'hKZ', label: 'Haftalık K/Z', isMoney: true, isKZ: true},
@@ -511,8 +424,7 @@
       const val = totals[k.id];
       let pct = null;
       
-      // Yüzde hesaplama
-      if (k.id === 'tKZ' || k.id === 'tutar') {
+      if (k.id === 'tKZ') {
         pct = totals.yatirim > 0 ? (totals.tKZ / totals.yatirim) * 100 : 0;
       } else if (['gKZ', 'hKZ', 'aKZ'].includes(k.id)) {
         const base = totals.tutar - totals[k.id];
@@ -522,16 +434,15 @@
       const cardClass = k.isKZ ? (val >= 0 ? 'up-card' : 'down-card') : '';
       const valClass = k.isKZ ? (val >= 0 ? 'up' : 'down') : '';
       
-      // Dağılım listesi
       let distHtml = '';
       const sortedGroups = Object.keys(groups).sort((a, b) => groups[b][k.id] - groups[a][k.id]);
       
       for (let g of sortedGroups) {
         const gv = groups[g][k.id];
         let gpct = null;
-        if (k.id === 'tKZ' || k.id === 'tutar') {
+        if (k.id === 'tKZ') {
           gpct = groups[g].yatirim > 0 ? (groups[g].tKZ / groups[g].yatirim) * 100 : 0;
-        } else {
+        } else if (['gKZ', 'hKZ', 'aKZ'].includes(k.id)) {
           const gbase = groups[g].tutar - gv;
           gpct = gbase > 0 ? (gv / gbase) * 100 : 0;
         }
@@ -540,7 +451,7 @@
         distHtml += `<div class="dist-row" onclick="event.stopPropagation(); showDetails('${g}')">
           <span>${g}</span>
           <span class="${gClass}">
-            ${fmt(gv)}${k.isMoney ? ' ₺' : ''}
+            ${fmtMoney(gv)}
             ${gpct !== null ? `<span class="${pctClass(gpct)}">${fmtPct(gpct)}</span>` : ''}
           </span>
         </div>`;
@@ -549,7 +460,7 @@
       html += `<div class="card ${cardClass}" onclick="toggleCard(this)">
         <span>${k.label}</span>
         <div class="value ${valClass}">
-          ${fmt(val)}${k.isMoney ? ' ₺' : ''}
+          ${fmtMoney(val)}
           ${pct !== null ? `<span class="${pctClass(pct)}">${fmtPct(pct)}</span>` : ''}
         </div>
         <div class="dist-container">${distHtml}</div>
@@ -557,7 +468,6 @@
     }
     
     document.getElementById('summaryGrid').innerHTML = html;
-    debug('Summaries render edildi');
   }
 
   function renderSepetCards(sepetGroups) {
@@ -573,7 +483,7 @@
       html += `<div class="sepet-card ${p >= 0 ? 'up-card' : 'down-card'}" onclick="showSepetDetails('${name.replace(/'/g, "\\'")}')">
         <div class="sepet-name">${name}</div>
         <div class="sepet-val ${g.tKZ >= 0 ? 'up' : 'down'}">
-          ${fmt(g.tutar)} ₺<span class="${pctClass(p)}">${fmtPct(p)}</span>
+          ${fmtMoney(g.tutar)}<span class="${pctClass(p)}">${fmtPct(p)}</span>
         </div>
         <div class="sepet-sub">En büyük: ${topItem?.ad || '-'} (${share.toFixed(1)}%)</div>
       </div>`;
@@ -621,7 +531,7 @@
       html += `<div class="m-row">
         <span style="font-size:.75rem; font-weight:800;">${item.ad}</span>
         <span style="font-weight:900;">
-          <span class="${p >= 0 ? 'up' : 'down'}">${fmt(item.fiyat)}</span>
+          <span class="${p >= 0 ? 'up' : 'down'}">${fmtMoney(item.fiyat)}</span>
           <span class="${pctClass(p)}">(${fmtPct(p)})</span>
         </span>
       </div>`;
@@ -672,8 +582,8 @@
       <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border);">
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; font-size: 0.75rem;">
           <div><div style="color: var(--text-muted); font-size: 0.6rem;">VARLIK</div><div style="font-weight: 800; color: #ffd1ae;">${items.length}</div></div>
-          <div><div style="color: var(--text-muted); font-size: 0.6rem;">YATIRIM</div><div style="font-weight: 800;">${fmt(tot.yatirim)} ₺</div></div>
-          <div><div style="color: var(--text-muted); font-size: 0.6rem;">GÜNCEL</div><div class="${kzClass(tot.tKZ)}" style="font-weight: 800;">${fmt(tot.tutar)} ₺</div></div>
+          <div><div style="color: var(--text-muted); font-size: 0.6rem;">YATIRIM</div><div style="font-weight: 800;">${fmtMoney(tot.yatirim)}</div></div>
+          <div><div style="color: var(--text-muted); font-size: 0.6rem;">PORTFÖY</div><div class="${kzClass(tot.tKZ)}" style="font-weight: 800;">${fmtMoney(tot.tutar)}</div></div>
           <div><div style="color: var(--text-muted); font-size: 0.6rem;">K/Z</div><div class="${kzClass(tot.tKZ)}" style="font-weight: 800;">${fmtPct(p)}</div></div>
         </div>
       </div>
@@ -704,28 +614,25 @@
     const pH = tot.tutar - tot.hKZ > 0 ? (tot.hKZ / (tot.tutar - tot.hKZ)) * 100 : 0;
     const pA = tot.tutar - tot.aKZ > 0 ? (tot.aKZ / (tot.tutar - tot.aKZ)) * 100 : 0;
     
-    // KPI'lar
     const kpi = (label, val, pct) => `
       <div class="kpi">
         <div class="lbl">${label}</div>
         <div class="val ${val >= 0 ? 'up' : 'down'}">
-          ${fmt(val)} ₺${pct !== null ? `<span class="${pctClass(pct)}">${fmtPct(pct)}</span>` : ''}
+          ${fmtMoney(val)}${pct !== null ? `<span class="${pctClass(pct)}">${fmtPct(pct)}</span>` : ''}
         </div>
       </div>
     `;
     
     document.getElementById('sepetKpis').innerHTML = 
-      kpi('Portföy', tot.tutar, pTotal) +
-      kpi('Yatırım', tot.yatirim, null) +
+      kpi('PORTFÖY', tot.tutar, pTotal) +
+      kpi('YATIRIM', tot.yatirim, null) +
       kpi('Toplam K/Z', tot.tKZ, pTotal) +
       kpi('Günlük', tot.gKZ, pG) +
       kpi('Haftalık', tot.hKZ, pH) +
       kpi('Aylık', tot.aKZ, pA);
-    
-    // Grafik
+
     renderSepetChart(items, tot);
     
-    // İstatistikler
     const avgDays = items.length > 0 ? Math.round(items.reduce((acc, x) => {
       const d = parseInt(getDaysBetween(x.alisTarihi));
       return acc + (isNaN(d) ? 0 : d);
@@ -741,7 +648,6 @@
       <div class="stat-mini"><div class="lbl">Çeşitlilik</div><div class="val" style="color: #22d3ee;">${[...new Set(items.map(x => x.tur))].length} Tür</div></div>
     `;
     
-    // Top 3
     const top3 = [...items].sort((a, b) => b.tutar - a.tutar).slice(0, 3);
     document.getElementById('sepetTopList').innerHTML = `
       <div style="font-size: .65rem; font-weight: 900; color: #ffd1ae; margin-bottom: 8px;">🎯 EN BÜYÜK 3 VARLIK</div>
@@ -750,7 +656,7 @@
         const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
         return `<div style="display:flex; justify-content:space-between; font-size:.72rem; padding:6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
           <span>${medal} ${v.ad} <span style="color: var(--text-muted); font-size: 0.6rem;">(${v.tur})</span></span>
-          <span style="font-weight: 800;">${share.toFixed(1)}% • ${fmt(v.tutar)} ₺</span>
+          <span style="font-weight: 800;">${share.toFixed(1)}% • ${fmtMoney(v.tutar)}</span>
         </div>`;
       }).join('')}
     `;
@@ -768,7 +674,6 @@
       sepetChart = null;
     }
     
-    // Tarihe göre sırala
     const sorted = [...items].sort((a, b) => {
       const da = a.alisTarihi ? new Date(a.alisTarihi.split('.').reverse().join('-')) : new Date(0);
       const db = b.alisTarihi ? new Date(b.alisTarihi.split('.').reverse().join('-')) : new Date(0);
@@ -790,7 +695,6 @@
       degerData.push(cumDeger);
     }
     
-    // Bugünü ekle
     if (labels[labels.length - 1] !== 'Bugün') {
       labels.push('Bugün');
       yatirimData.push(totals.yatirim);
@@ -840,7 +744,7 @@
             backgroundColor: 'rgba(0,0,0,0.9)',
             titleColor: '#ffd1ae',
             callbacks: {
-              label: (ctx) => ctx.dataset.label + ': ' + fmt(ctx.parsed.y) + ' ₺'
+              label: (ctx) => ctx.dataset.label + ': ' + fmtMoney(ctx.parsed.y)
             }
           }
         },
@@ -873,32 +777,33 @@
         </div>
         <div style="text-align:right">
           <div class="${kzClass(a.tKZ)}" style="font-weight:900; font-size:.9rem;">
-            ${fmt(a.tutar)} ₺<span class="${pctClass(pTotal)}">(${fmtPct(pTotal)})</span>
+            ${fmtMoney(a.tutar)}<span class="${pctClass(pTotal)}">(${fmtPct(pTotal)})</span>
           </div>
-          <div class="${kzClass(a.tKZ)}" style="font-size:.62rem; opacity: 0.8;">${fmt(a.tKZ)} ₺ K/Z</div>
+          <div class="${kzClass(a.tKZ)}" style="font-size:.62rem; opacity: 0.8;">${fmtMoney(a.tKZ)} K/Z</div>
         </div>
       </div>
       <div class="asset-expand">
-        <div class="det-box"><span class="det-lbl">Güncel Fiyat</span><span class="det-val" style="color:#ffd1ae;">${fmt(a.fiyat)} ₺</span></div>
+        <div class="det-box"><span class="det-lbl">Alış Fiyatı</span><span class="det-val" style="color:#ffd1ae;">${fmtMoney(a.aFiyat)}</span></div>
+        <div class="det-box"><span class="det-lbl">Güncel Fiyat</span><span class="det-val" style="color:#ffd1ae;">${fmtMoney(a.fiyat)}</span></div>
         <div class="det-box"><span class="det-lbl">Sepet</span><span class="det-val">${a.sepet}</span></div>
         <div class="det-box"><span class="det-lbl">Tür</span><span class="det-val">${a.tur || '-'}</span></div>
-        <div class="det-box"><span class="det-lbl">Adet</span><span class="det-val">${fmt(a.adet)}</span></div>
-        <div class="det-box"><span class="det-lbl">Alış Fiyatı</span><span class="det-val">${fmt(a.aFiyat)} ₺</span></div>
-        <div class="det-box"><span class="det-lbl">Yatırım</span><span class="det-val">${fmt(a.yatirim)} ₺</span></div>
+        <div class="det-box"><span class="det-lbl">Adet</span><span class="det-val">${fmtInt(a.adet)}</span></div>
+        <div class="det-box"><span class="det-lbl">YATIRIM</span><span class="det-val">${fmtMoney(a.yatirim)}</span></div>
+        <div class="det-box"><span class="det-lbl">PORTFÖY</span><span class="det-val">${fmtMoney(a.tutar)}</span></div>
         <div class="det-box"><span class="det-lbl">Süre</span><span class="det-val">${getDaysBetween(a.alisTarihi)}</span></div>
-        <div class="det-box"><span class="det-lbl">Günlük K/Z</span><span class="det-val ${kzClass(a.gKZ)}">${fmt(a.gKZ)} ₺<span class="${pctClass(pG)}">${fmtPct(pG)}</span></span></div>
-        <div class="det-box"><span class="det-lbl">Haftalık K/Z</span><span class="det-val ${kzClass(a.hKZ)}">${fmt(a.hKZ)} ₺<span class="${pctClass(pH)}">${fmtPct(pH)}</span></span></div>
-        <div class="det-box"><span class="det-lbl">Aylık K/Z</span><span class="det-val ${kzClass(a.aKZ)}">${fmt(a.aKZ)} ₺<span class="${pctClass(pA)}">${fmtPct(pA)}</span></span></div>
+        <div class="det-box"><span class="det-lbl">Günlük K/Z</span><span class="det-val ${kzClass(a.gKZ)}">${fmtMoney(a.gKZ)}<span class="${pctClass(pG)}">${fmtPct(pG)}</span></span></div>
+        <div class="det-box"><span class="det-lbl">Haftalık K/Z</span><span class="det-val ${kzClass(a.hKZ)}">${fmtMoney(a.hKZ)}<span class="${pctClass(pH)}">${fmtPct(pH)}</span></span></div>
+        <div class="det-box"><span class="det-lbl">Aylık K/Z</span><span class="det-val ${kzClass(a.aKZ)}">${fmtMoney(a.aKZ)}<span class="${pctClass(pA)}">${fmtPct(pA)}</span></span></div>
         <div class="det-box" style="grid-column: span 2; background: rgba(255,255,255,0.05);">
           <span class="det-lbl">Toplam K/Z</span>
-          <span class="det-val ${kzClass(a.tKZ)}" style="font-size: 1rem;">${fmt(a.tKZ)} ₺<span class="${pctClass(pTotal)}">${fmtPct(pTotal)}</span></span>
+          <span class="det-val ${kzClass(a.tKZ)}" style="font-size: 1rem;">${fmtMoney(a.tKZ)}<span class="${pctClass(pTotal)}">${fmtPct(pTotal)}</span></span>
         </div>
       </div>
     </div>`;
   }
 
   // ==========================================
-  // UI FONKSİYONLARI
+  // UI
   // ==========================================
   function toggleCard(el) {
     const active = el.classList.contains('active');
@@ -940,7 +845,7 @@
   // BAŞLAT
   // ==========================================
   fetchData();
-  setInterval(fetchData, 300000); // 5 dakika
+  setInterval(fetchData, 300000);
 </script>
 </body>
 </html>
