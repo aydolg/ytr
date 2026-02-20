@@ -280,28 +280,19 @@
   // YARDIMCI FONKSİYONLAR
   // ==========================================
   function clean(value) {
-    if (!value || value === '' || value === '-') return 0;
-    const str = value.toString().trim();
-    
-    // Binlik ayraç ve ondalık ayırma
-    // Önce son virgül ve noktayı bul
-    const lastComma = str.lastIndexOf(',');
-    const lastDot = str.lastIndexOf('.');
-    
-    let numStr;
-    if (lastComma > lastDot && lastComma !== -1) {
-      // Türkçe format: 1.234,56 veya 1234,56
-      numStr = str.replace(/\,/g, '').replace('.', ',');
-    } else if (lastDot > lastComma && lastDot !== -1) {
-      // İngilizce format: 1,234.56
-      numStr = str.replace(/,/g, '');
-    } else {
-      // Sadece sayı veya binlik ayraç yok
-      numStr = str.replace(/,/g, '.');
-    }
-    
-    const result = parseFloat(numStr.replace(/[^0-9.-]/g, ''));
-    return isNaN(result) ? 0 : result;
+  if (!value || value === '' || value === '-') return 0;
+  let str = value.toString().trim();
+  
+  // Önce binlik ayraçları (nokta) kaldır, sonra ondalık virgülü noktaya çevir
+  // Türkçe: 96.550,00 -> 96550.00
+  // Türkçe: 1.234,56 -> 1234.56
+  
+  str = str.replace(/\./g, '');      // Binlik noktaları kaldır
+  str = str.replace(/,/g, '.');      // Ondalık virgülü noktaya çevir
+  str = str.replace(/[^0-9.-]/g, ''); // Sadece sayı, nokta, eksi kal
+  
+  const result = parseFloat(str);
+  return isNaN(result) ? 0 : result;
   }
 
   function fmt(num) {
