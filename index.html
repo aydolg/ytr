@@ -291,7 +291,7 @@
     let numStr;
     if (lastComma > lastDot && lastComma !== -1) {
       // Türkçe format: 1.234,56 veya 1234,56
-      numStr = str.replace(/\./g, '').replace(',', '.');
+      numStr = str.replace(/\,/g, '').replace('.', ',');
     } else if (lastDot > lastComma && lastDot !== -1) {
       // İngilizce format: 1,234.56
       numStr = str.replace(/,/g, '');
