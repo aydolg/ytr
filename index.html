@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Elite Portföy Terminali v5.1 — Debug</title>
+  <title>Elite Portföy Terminali v5.2</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,7 +23,6 @@
       background: radial-gradient(1200px 600px at 80% 0%, rgba(255, 94, 31, 0.18), transparent 60%),
         radial-gradient(900px 600px at -10% 30%, rgba(255, 0, 43, 0.15), transparent 60%),
         linear-gradient(180deg, var(--bg), var(--bg2)); line-height:1.45;
-      touch-action: manipulation;
     }
     .container{ max-width:1200px; margin:0 auto; }
     .glass{
@@ -32,20 +31,15 @@
       box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 10px 40px rgba(0,0,0,0.35);
       backdrop-filter: blur(14px); transition: all .25s ease;
     }
-    .glass:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,0.12); box-shadow: 0 0 24px var(--glow); }
     
     .status-badge{
       position: fixed; top: 10px; right: 10px; padding: 6px 12px; border-radius: 20px;
       font-size: .65rem; font-weight: 800; z-index: 9999; text-transform: uppercase;
       background: rgba(0,0,0,0.6); border: 1px solid var(--border);
-      transition: all 0.3s ease;
     }
-    .status-ok{ color: var(--up); border-color: var(--up); box-shadow: 0 0 10px rgba(23,241,167,0.3); }
-    .status-warn{ color: var(--magma-2); border-color: var(--magma-2); animation: pulse 2s infinite; }
-    .status-err{ color: var(--down); border-color: var(--down); animation: shake 0.5s; }
-    
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .status-ok{ color: var(--up); border-color: var(--up); }
+    .status-warn{ color: var(--magma-2); border-color: var(--magma-2); }
+    .status-err{ color: var(--down); border-color: var(--down); }
 
     .perf-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:14px; }
     .perf-box{ padding:10px 12px; }
@@ -54,25 +48,20 @@
 
     .ticker-wrap{ width:100%; overflow:hidden; border-radius:12px; margin-bottom:14px; position:relative; border:1px solid var(--border); }
     .ticker-neon{ position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, var(--magma-2), var(--magma-1), transparent); box-shadow: 0 0 12px var(--glow-strong); }
-    .ticker{ 
-      display:inline-flex; align-items:center; white-space:nowrap; padding: 12px 0; 
-      animation: ticker-move 35s linear infinite;
-      will-change: transform;
-    }
+    .ticker{ display:inline-flex; align-items:center; white-space:nowrap; padding: 12px 0; animation: ticker-move 35s linear infinite; }
     .ticker-item{ padding: 0 36px; font-size:.75rem; font-weight:700; display:flex; align-items:center; gap:6px; }
     @keyframes ticker-move { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    .summary-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:16px; position:relative; }
+    .summary-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:16px; }
     @media (max-width: 680px){ .summary-grid{ grid-template-columns: repeat(2, 1fr); } }
     .card{ 
       padding:12px 10px; border-radius:16px; cursor:pointer; position:relative; z-index:1; 
       border-left: 4px solid rgba(255,255,255,0.05); 
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong); 
       box-shadow: 0 10px 36px rgba(0,0,0,0.4), 0 0 16px rgba(255,82,35,0.18);
-      transition: all .25s ease;
       min-height: 60px;
     }
-    .card.active{ z-index: 999!important; box-shadow: 0 10px 50px rgba(0,0,0,0.55), 0 0 26px var(--glow-strong); }
+    .card.active{ z-index: 999; box-shadow: 0 10px 50px rgba(0,0,0,0.55), 0 0 26px var(--glow-strong); }
     .card span{ color:var(--text-muted); font-size:.6rem; font-weight:800; text-transform:uppercase; display:block; margin-bottom:3px; letter-spacing:.3px; }
     .card .value{ font-size:.98rem; font-weight:900; letter-spacing:.2px; display:flex; align-items:baseline; gap:8px; flex-wrap: wrap; }
     .card.up-card{ border-left-color: var(--up); }
@@ -86,150 +75,105 @@
       overflow-y: auto;
     }
     .card.active .dist-container{ display:block; }
-    .dist-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:.74rem; font-weight:700; cursor: pointer; transition: background 0.2s; }
-    .dist-row:hover{ background: rgba(255,255,255,0.03); border-radius: 6px; padding-left: 6px; padding-right: 6px; }
+    .dist-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:.74rem; font-weight:700; }
     .dist-row:last-child{ border-bottom:0; }
 
     .sepet-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
-    .sepet-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px; border-bottom: 1px solid var(--border); text-shadow: 0 0 16px rgba(255,115,55,0.45); cursor:pointer; user-select: none; }
+    .sepet-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px; border-bottom: 1px solid var(--border); cursor:pointer; }
     .sepet-header::after{ content: '▼'; font-size:.6rem; transition: transform .3s ease; color: var(--magma-2); }
     .sepet-block.collapsed .sepet-header::after{ transform: rotate(-90deg); }
     .sepet-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; max-height: 1000px; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 1; }
     .sepet-block.collapsed .sepet-grid{ max-height: 0; opacity: 0; margin-top: 0; }
     @media (max-width: 680px){ .sepet-grid{ grid-template-columns: repeat(2, 1fr); } }
-    .sepet-card{ 
-      padding:12px 10px; border-radius:16px; cursor:pointer; position:relative; 
-      border-left:4px solid rgba(255,255,255,0.06); 
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong); 
-      box-shadow: 0 10px 36px rgba(0,0,0,0.35), 0 0 16px rgba(255,82,35,0.18); 
-      transition: all .25s ease; 
-    }
-    .sepet-card:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,0.12); box-shadow: 0 12px 44px rgba(0,0,0,0.45), 0 0 24px var(--glow); }
+    .sepet-card{ padding:12px 10px; border-radius:16px; cursor:pointer; border-left:4px solid rgba(255,255,255,0.06); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong); box-shadow: 0 10px 36px rgba(0,0,0,0.35), 0 0 16px rgba(255,82,35,0.18); }
     .sepet-card.up-card{ border-left-color: var(--up); }
     .sepet-card.down-card{ border-left-color: var(--down); }
-    .sepet-name{ font-size:.6rem; letter-spacing:.4px; color:#ffd1ae; font-weight:900; text-transform:uppercase; margin-bottom:4px; text-shadow:0 0 12px rgba(255,115,55,0.35); }
+    .sepet-name{ font-size:.6rem; letter-spacing:.4px; color:#ffd1ae; font-weight:900; text-transform:uppercase; margin-bottom:4px; }
     .sepet-val{ font-size:.98rem; font-weight:900; display:flex; align-items:baseline; gap:8px; }
-    .sepet-val .pct{ font-size:.70rem; font-weight:800; }
     .sepet-sub{ font-size:.68rem; color:var(--text-muted); margin-top:6px; }
 
     .market-block{ padding:8px 14px 12px 14px; border-radius:18px; margin-bottom:22px; }
-    .market-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px; border-bottom: 1px solid var(--border); text-shadow: 0 0 16px rgba(255,115,55,0.45); cursor:pointer; user-select: none; }
+    .market-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 0 8px 0; font-size:.66rem; font-weight:900; color:#ffd1ae; letter-spacing:1px; border-bottom: 1px solid var(--border); cursor:pointer; }
     .market-header::after{ content: '▼'; font-size:.6rem; transition: transform .3s ease; color: var(--magma-2); }
     .market-block.collapsed .market-header::after{ transform: rotate(-90deg); }
     .market-content{ max-height: 1000px; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 1; }
     .market-block.collapsed .market-content{ max-height: 0; opacity: 0; }
-    .m-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); transition: background 0.2s; }
-    .m-row:hover{ background: rgba(255,255,255,0.02); margin: 0 -10px; padding-left: 10px; padding-right: 10px; border-radius: 8px; }
+    .m-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
     .m-row:last-child{ border-bottom:0; }
 
-    .asset-item{ margin-bottom:10px; overflow:hidden; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), var(--card-bg); border:1px solid var(--border); box-shadow: 0 10px 36px rgba(0,0,0,0.35); transition: all 0.3s ease; }
-    .asset-item:hover{ transform: translateX(4px); border-left: 3px solid var(--magma-2); }
+    .asset-item{ margin-bottom:10px; overflow:hidden; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), var(--card-bg); border:1px solid var(--border); box-shadow: 0 10px 36px rgba(0,0,0,0.35); }
     .asset-main{ padding:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
     .asset-expand{ display:none; padding:12px; gap:10px; border-top:1px solid var(--border); background: linear-gradient(180deg, rgba(255,130,60,0.04), rgba(255,130,60,0.02)); grid-template-columns: repeat(2, 1fr); }
     @media (min-width: 680px){ .asset-expand{ grid-template-columns: repeat(4, 1fr); } }
-    .det-box{ display:flex; flex-direction:column; background: rgba(255,255,255,0.03); padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); transition: all 0.2s; }
-    .det-box:hover{ background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+    .det-box{ display:flex; flex-direction:column; background: rgba(255,255,255,0.03); padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); }
     .det-lbl{ font-size:.52rem; color:var(--text-muted); text-transform:uppercase; font-weight:900; letter-spacing:.3px; }
     .det-val{ font-size:.74rem; font-weight:800; color:#f1f5f9; display:flex; align-items:center; gap:6px; }
 
     .pct{ font-weight:900; font-size:.72rem; white-space:nowrap; }
-    .pct.up-grad{ background: linear-gradient(90deg, #17f1a7, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(23,241,167,0.25); }
-    .pct.down-grad{ background: linear-gradient(90deg, #ff3b2f, #ff7a1a); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(255,75,60,0.25); }
+    .pct.up-grad{ background: linear-gradient(90deg, #17f1a7, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .pct.down-grad{ background: linear-gradient(90deg, #ff3b2f, #ff7a1a); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .up{ color: var(--up); } .down{ color: var(--down); }
 
     .sepet-summary{ display:grid; grid-template-columns: 1fr; gap:12px; margin: 0 0 12px 0; padding:12px; border-radius:14px; border:1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025)), var(--card-bg-strong); box-shadow: 0 10px 36px rgba(0,0,0,0.4); }
     .sepet-kpis{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom: 12px; }
     @media (max-width: 680px){ .sepet-kpis{ grid-template-columns: repeat(2, 1fr); } }
-    .kpi{ background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:10px; transition: all 0.2s; }
-    .kpi:hover{ background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+    .kpi{ background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:10px; }
     .kpi .lbl{ font-size:.54rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; margin-bottom:4px; }
     .kpi .val{ font-size:.9rem; font-weight:900; display:flex; align-items:baseline; gap:8px; }
     
-    .sepet-chart-container{ 
-      background: rgba(0,0,0,0.2); 
-      border-radius: 12px; 
-      padding: 15px; 
-      border: 1px solid var(--border);
-      position: relative;
-    }
-    .chart-title{ 
-      font-size:.7rem; 
-      font-weight:900; 
-      color:#ffd1ae; 
-      margin-bottom: 10px; 
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .chart-legend{ display: flex; gap: 15px; font-size: 0.6rem; }
-    .legend-item{ display: flex; align-items: center; gap: 5px; }
-    .legend-dot{ width: 8px; height: 8px; border-radius: 50%; }
-    .sepet-stats-row{ 
-      display: grid; 
-      grid-template-columns: repeat(4, 1fr); 
-      gap: 10px; 
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
+    .sepet-chart-container{ background: rgba(0,0,0,0.2); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
+    .chart-title{ font-size:.7rem; font-weight:900; color:#ffd1ae; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    .sepet-stats-row{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
     @media (max-width: 680px){ .sepet-stats-row{ grid-template-columns: repeat(2, 1fr); } }
     .stat-mini{ text-align: center; }
-    .stat-mini .lbl{ font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+    .stat-mini .lbl{ font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; }
     .stat-mini .val{ font-size: 0.8rem; font-weight: 800; }
     
-    .last-update{ 
-      font-size: 0.6rem; 
-      color: var(--text-muted); 
-      text-align: center; 
-      margin-top: 20px;
-      padding: 10px;
-      opacity: 0.7;
-    }
+    .last-update{ font-size: 0.6rem; color: var(--text-muted); text-align: center; margin-top: 20px; padding: 10px; opacity: 0.7; }
     
-    /* DEBUG PANEL */
-    .debug-panel{
+    /* DEBUG */
+    .debug-box{
       position: fixed;
       bottom: 10px;
       left: 10px;
-      background: rgba(0,0,0,0.9);
-      border: 1px solid var(--border);
+      right: 10px;
+      background: rgba(0,0,0,0.95);
+      border: 2px solid var(--magma-2);
       border-radius: 8px;
       padding: 10px;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      max-width: 300px;
-      max-height: 200px;
-      overflow: auto;
-      z-index: 9998;
+      font-size: 0.7rem;
+      color: #fff;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 10000;
       display: none;
+      font-family: monospace;
     }
-    .debug-panel.show{ display: block; }
-    .debug-toggle{
+    .debug-box.show{ display: block; }
+    .debug-btn{
       position: fixed;
       bottom: 10px;
       left: 10px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
+      background: var(--magma-2);
+      color: #000;
+      border: none;
+      border-radius: 4px;
       padding: 5px 10px;
-      font-size: 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 800;
       cursor: pointer;
-      z-index: 9999;
-      color: var(--text-muted);
+      z-index: 10001;
     }
   </style>
 </head>
 <body>
 
 <div id="statusBadge" class="status-badge status-warn">Bağlanıyor...</div>
-<button class="debug-toggle" onclick="toggleDebug()">🐛 Debug</button>
-<div id="debugPanel" class="debug-panel"></div>
+<button class="debug-btn" onclick="toggleDebug()">DEBUG</button>
+<div id="debugBox" class="debug-box"></div>
 
 <div class="container">
 
-  <!-- Performans -->
   <div class="perf-grid">
     <div class="perf-box glass">
       <div class="perf-label">Günün Yıldızı</div>
@@ -241,60 +185,41 @@
     </div>
   </div>
 
-  <!-- Ticker -->
   <div class="ticker-wrap glass">
     <div class="ticker-neon"></div>
-    <div class="ticker" id="tickerContent">
-      <div class="ticker-item">Veriler senkronize ediliyor...</div>
-    </div>
+    <div class="ticker" id="tickerContent">Yükleniyor...</div>
   </div>
 
-  <!-- Summary Cards -->
   <div class="summary-grid" id="summaryGrid">
-    <div class="card" style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.7rem;">
-      Yükleniyor...
-    </div>
+    <div class="card">Yükleniyor...</div>
   </div>
 
-  <!-- SEPETLER -->
   <div class="sepet-block glass collapsed" id="sepetBlock">
-    <div class="sepet-header" onclick="toggleSepetBlock()">SEPETLER — KOMPAKT ÖZET</div>
+    <div class="sepet-header" onclick="toggleSepetBlock()">SEPETLER</div>
     <div class="sepet-grid" id="sepetGrid"></div>
   </div>
 
-  <!-- PİYASALAR -->
   <div class="market-block glass collapsed" id="marketBlock">
-    <div class="market-header" onclick="toggleMarketBlock()">PİYASALAR — GÜNCEL</div>
+    <div class="market-header" onclick="toggleMarketBlock()">PİYASALAR</div>
     <div class="market-content" id="marketContent">
       <div id="marketRows" style="padding: 10px 0;"></div>
     </div>
   </div>
 
-  <!-- Details -->
   <div id="detailSection" style="display:none; padding-bottom:100px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding: 0 5px;">
       <div id="detailTitle" style="font-weight:900; color:#ffd1ae; font-size:.82rem;">ANALİZ</div>
-      <div onclick="closeAll()" style="color:var(--down); font-size:.7rem; font-weight:bold; cursor:pointer; padding: 5px 10px; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,77,109,0.1)'" onmouseout="this.style.background='transparent'">[KAPAT]</div>
+      <div onclick="closeAll()" style="color:var(--down); font-size:.7rem; font-weight:bold; cursor:pointer;">[KAPAT]</div>
     </div>
     
     <div id="sepetSummaryWrap" class="sepet-summary" style="display:none;">
       <div class="sepet-kpis" id="sepetKpis"></div>
-      
       <div class="sepet-chart-container">
-        <div class="chart-title">
-          <span>📈 SEPET GELİŞİMİ (ZAMAN ÇİZELGESİ)</span>
-          <div class="chart-legend">
-            <div class="legend-item"><div class="legend-dot" style="background: #17f1a7;"></div><span>Yatırım</span></div>
-            <div class="legend-item"><div class="legend-dot" style="background: #ff7a1a;"></div><span>Güncel Değer</span></div>
-          </div>
-        </div>
-        <div style="height:220px; position: relative;">
-          <canvas id="sepetChart"></canvas>
-        </div>
+        <div class="chart-title">📈 SEPET GELİŞİMİ</div>
+        <div style="height:200px;"><canvas id="sepetChart"></canvas></div>
         <div class="sepet-stats-row" id="sepetStatsRow"></div>
       </div>
-      
-      <div id="sepetTopList" style="margin-top:12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 10px; border: 1px solid var(--border);"></div>
+      <div id="sepetTopList" style="margin-top:12px;"></div>
     </div>
     
     <div id="assetGrid"></div>
@@ -304,552 +229,547 @@
 </div>
 
 <script>
-  /* ======= CONFIG ======= */
+  // ==========================================
+  // CONFIG
+  // ==========================================
   const SHEET_ID = "2PACX-1vQeTFovlKfvEp9sPepJb9SGxf_2AgMU7eEPTDCc6WWc0o1Z1AizX6K2mJlaWtcvSderiBym7cyhEdsC";
   const GID_PORTFOLIO = 0;
   const GID_PIYASALAR = 1068816976;
   
-  let globalData = [], marketData = [], sepetChart = null;
-  let lastFetchTime = null;
-  let debugMode = false;
+  let globalData = [];
+  let marketData = [];
+  let sepetChart = null;
+  let debugActive = false;
 
-  /* ======= DEBUG ======= */
-  const log = (msg, data) => {
-    if (!debugMode) return;
-    const panel = document.getElementById('debugPanel');
-    const entry = document.createElement('div');
-    entry.style.marginBottom = '5px';
-    entry.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-    entry.style.paddingBottom = '5px';
-    entry.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${msg}<br><pre style="margin:3px 0; font-size:0.6rem; color:#aaa;">${data ? JSON.stringify(data, null, 2).substring(0, 200) : ''}</pre>`;
-    panel.appendChild(entry);
-    panel.scrollTop = panel.scrollHeight;
-  };
-
-  const toggleDebug = () => {
-    debugMode = !debugMode;
-    document.getElementById('debugPanel').classList.toggle('show');
-  };
-
-  /* ======= HELPERS ======= */
-  const clean = v => {
-    if (!v || v === "" || v.toString().includes('#N/A') || v.toString().includes('#REF!') || v.toString().includes('#DIV/0!')) return 0;
-    const str = v.toString().trim();
-    // Binlik ayraç ve ondalık işleme
-    if (str.includes(',') && str.includes('.')) {
-      // 1,234.56 veya 1.234,56 olabilir
-      const lastComma = str.lastIndexOf(',');
-      const lastDot = str.lastIndexOf('.');
-      if (lastComma > lastDot) {
-        // Türkçe: 1.234,56
-        return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0;
-      } else {
-        // İngilizce: 1,234.56
-        return parseFloat(str.replace(/,/g, '')) || 0;
-      }
+  // ==========================================
+  // DEBUG FONKSİYONLARI
+  // ==========================================
+  function toggleDebug() {
+    debugActive = !debugActive;
+    document.getElementById('debugBox').classList.toggle('show');
+    if (debugActive) {
+      updateDebug();
     }
-    // Sadece virgül varsa (ondalık)
-    if (str.includes(',') && !str.includes('.')) {
-      const parts = str.split(',');
-      if (parts.length === 2 && parts[1].length <= 2) {
-        return parseFloat(str.replace(',', '.')) || 0;
-      }
-      return parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0;
+  }
+
+  function debug(msg) {
+    if (!debugActive) return;
+    const box = document.getElementById('debugBox');
+    const line = document.createElement('div');
+    line.textContent = new Date().toLocaleTimeString() + ' | ' + msg;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;
+    if (box.children.length > 50) box.removeChild(box.firstChild);
+  }
+
+  function updateDebug() {
+    if (!debugActive) return;
+    const box = document.getElementById('debugBox');
+    box.innerHTML = '';
+    debug('Global data count: ' + globalData.length);
+    if (globalData.length > 0) {
+      debug('Örnek: ' + globalData[0].ad + ' | Yatırım:' + globalData[0].yatirim + ' | Tutar:' + globalData[0].tutar);
+      const totals = calculateTotals();
+      debug('TOPLAM Yatırım: ' + totals.yatirim);
+      debug('TOPLAM Tutar: ' + totals.tutar);
+      debug('TOPLAM K/Z: ' + totals.tKZ);
     }
-    return parseFloat(str.replace(/[^0-9.-]+/g, '')) || 0;
-  };
-  
-  const getDaysBetween = dateStr => {
-    if (!dateStr || dateStr.length < 5) return "-";
+  }
+
+  // ==========================================
+  // YARDIMCI FONKSİYONLAR
+  // ==========================================
+  function clean(value) {
+    if (!value || value === '' || value === '-') return 0;
+    const str = value.toString().trim();
+    
+    // Binlik ayraç ve ondalık ayırma
+    // Önce son virgül ve noktayı bul
+    const lastComma = str.lastIndexOf(',');
+    const lastDot = str.lastIndexOf('.');
+    
+    let numStr;
+    if (lastComma > lastDot && lastComma !== -1) {
+      // Türkçe format: 1.234,56 veya 1234,56
+      numStr = str.replace(/\./g, '').replace(',', '.');
+    } else if (lastDot > lastComma && lastDot !== -1) {
+      // İngilizce format: 1,234.56
+      numStr = str.replace(/,/g, '');
+    } else {
+      // Sadece sayı veya binlik ayraç yok
+      numStr = str.replace(/,/g, '.');
+    }
+    
+    const result = parseFloat(numStr.replace(/[^0-9.-]/g, ''));
+    return isNaN(result) ? 0 : result;
+  }
+
+  function fmt(num) {
+    return num.toLocaleString('tr-TR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  }
+
+  function fmtPct(p) {
+    if (!isFinite(p) || isNaN(p)) return "%0.00";
+    const sign = p > 0 ? "+" : (p < 0 ? "−" : "");
+    return sign + "%" + Math.abs(p).toFixed(2);
+  }
+
+  function pctClass(p) {
+    return p >= 0 ? 'pct up-grad' : 'pct down-grad';
+  }
+
+  function kzClass(v) {
+    return v >= 0 ? 'up' : 'down';
+  }
+
+  function calculateTotals() {
+    const t = { yatirim: 0, tutar: 0, tKZ: 0, gKZ: 0, hKZ: 0, aKZ: 0 };
+    for (let item of globalData) {
+      t.yatirim += item.yatirim;
+      t.tutar += item.tutar;
+      t.tKZ += item.tKZ;
+      t.gKZ += item.gKZ;
+      t.hKZ += item.hKZ;
+      t.aKZ += item.aKZ;
+    }
+    return t;
+  }
+
+  function getDaysBetween(dateStr) {
+    if (!dateStr) return "-";
     try {
+      const parts = dateStr.split(/[.\-/]/);
+      if (parts.length !== 3) return "-";
       let d, m, y;
-      if (dateStr.includes('.')) {
-        [d, m, y] = dateStr.split('.');
-      } else if (dateStr.includes('/')) {
-        [d, m, y] = dateStr.split('/');
-      } else if (dateStr.includes('-')) {
-        [y, m, d] = dateStr.split('-');
+      if (dateStr.includes('-') && parts[0].length === 4) {
+        [y, m, d] = parts;
       } else {
-        return "-";
+        [d, m, y] = parts;
       }
       if (y.length === 2) y = '20' + y;
-      const targetDate = new Date(y, m-1, d);
-      if (isNaN(targetDate.getTime())) return "-";
-      const diff = Math.floor((new Date() - targetDate) / (1000 * 60 * 60 * 24));
+      const date = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+      const diff = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
       return diff + " Gün";
     } catch(e) { return "-"; }
-  };
-  
-  const fmtPct = p => {
-    if (!isFinite(p) || isNaN(p)) return "%0.00";
-    return `${p > 0 ? "+" : (p < 0 ? "−" : "")}%${Math.abs(p).toFixed(2)}`;
-  };
-  const pctClass = p => p >= 0 ? 'pct up-grad' : 'pct down-grad';
-  const kzClass = v => v >= 0 ? 'up' : 'down';
-  const pctTotalKZ = (kz, yatirim) => {
-    if (!yatirim || yatirim === 0) return 0;
-    return (kz / yatirim) * 100;
-  };
-  const pctPeriodKZ = (kz, tutar) => {
-    const d = tutar - kz;
-    if (!d || d === 0) return 0;
-    return (kz / d) * 100;
-  };
+  }
 
-  const formatDate = (date) => {
-    if (!date) return '--';
-    return new Date(date).toLocaleString('tr-TR', { 
-      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
-    });
-  };
-
-  /* ======= STATUS ======= */
-  const setStatus = (text, type) => {
-    const badge = document.getElementById('statusBadge');
-    badge.innerText = text;
-    badge.className = 'status-badge status-' + type;
+  // ==========================================
+  // VERİ ÇEKME
+  // ==========================================
+  function fetchData() {
+    debug('Veri çekme başladı...');
+    setStatus('Yükleniyor...', 'warn');
     
-    if (type === 'ok') {
-      setTimeout(() => {
-        badge.style.opacity = '0.7';
-      }, 2000);
-    } else {
-      badge.style.opacity = '1';
-    }
-  };
-
-  /* ======= FETCH ======= */
-  const fetchData = async () => {
-    setStatus('Portföy yükleniyor...', 'warn');
-    log('Fetch başladı', { sheetId: SHEET_ID });
+    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PORTFOLIO}&single=true&output=csv`;
+    debug('URL: ' + url.substring(0, 80) + '...');
     
-    try {
-      await new Promise((resolve, reject) => {
-        const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PORTFOLIO}&single=true&output=csv`;
-        log('URL', url);
+    Papa.parse(url, {
+      download: true,
+      complete: function(results) {
+        debug('CSV yüklendi, satır: ' + results.data.length);
         
-        Papa.parse(url, {
-          download: true,
-          complete: res => {
-            log('Raw data satır sayısı', res.data.length);
-            log('İlk satır (header)', res.data[0]);
-            log('Örnek veri satırı', res.data[1]);
-            
-            if (!res.data || res.data.length < 2) {
-              reject('Boş veri');
-              return;
-            }
-            
-            // Header'ı atla, veri satırlarını işle
-            globalData = res.data.slice(1)
-              .filter(r => r[0] && r[0].trim() !== "" && r[0] !== "Varlık")
-              .map((r, idx) => {
-                const item = {
-                  ad: r[0]?.trim(), 
-                  tur: r[1]?.trim(), 
-                  alisTarihi: r[2], 
-                  vade: r[3],
-                  adet: clean(r[4]), 
-                  aFiyat: clean(r[5]), 
-                  yatirim: clean(r[6]),
-                  fiyat: clean(r[7]), 
-                  tutar: clean(r[8]), 
-                  gKZ: clean(r[9]),
-                  hKZ: clean(r[10]), 
-                  aKZ: clean(r[11]),
-                  tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])),
-                  sepet: r[18]?.trim() || "Genel Sepet",
-                  alisTarihiObj: parseDate(r[2])
-                };
-                if (idx < 3) log(`Item ${idx}`, item);
-                return item;
-              });
-            
-            log('İşlenen veri sayısı', globalData.length);
-            resolve();
-          },
-          error: err => {
-            log('Parse hatası', err);
-            reject(err);
-          }
-        });
-      });
-      
-      await fetchMarketData();
-      lastFetchTime = new Date();
-      document.getElementById('lastUpdate').innerText = 'Son güncelleme: ' + formatDate(lastFetchTime);
-      
-    } catch (err) {
-      console.error('Fetch hatası:', err);
-      log('HATA', err.toString());
-      setStatus('Veri çekilemedi', 'err');
-    }
-  };
-
-  const fetchMarketData = () => {
-    return new Promise((resolve, reject) => {
-      Papa.parse(`https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PIYASALAR}&single=true&output=csv`, {
-        download: true,
-        complete: res => {
-          marketData = res.data.slice(1)
-            .filter(r => r[0]?.trim())
-            .map(r => ({ 
-              ad: r[0].trim(), 
-              fiyat: clean(r[1]), 
-              degisim: clean(r[2]) 
-            }));
-          setStatus('Bağlandı', 'ok');
-          renderAll();
-          resolve();
-        },
-        error: err => {
-          setStatus('Piyasalar hatası', 'err');
-          marketData = [];
-          renderAll();
-          reject(err);
+        if (!results.data || results.data.length < 2) {
+          setStatus('Veri yok', 'err');
+          return;
         }
-      });
-    });
-  };
-
-  const parseDate = (dateStr) => {
-    if (!dateStr) return null;
-    try {
-      let d, m, y;
-      if (dateStr.includes('.')) {
-        [d, m, y] = dateStr.split('.');
-      } else if (dateStr.includes('/')) {
-        [d, m, y] = dateStr.split('/');
-      } else {
-        return null;
+        
+        // Header'ı atla (ilk satır)
+        const rows = results.data.slice(1);
+        globalData = [];
+        
+        for (let i = 0; i < rows.length; i++) {
+          const r = rows[i];
+          if (!r[0] || r[0].trim() === '' || r[0] === 'Varlık') continue;
+          
+          const item = {
+            ad: r[0]?.trim() || '',
+            tur: r[1]?.trim() || '',
+            alisTarihi: r[2] || '',
+            adet: clean(r[4]),
+            aFiyat: clean(r[5]),
+            yatirim: clean(r[6]),
+            fiyat: clean(r[7]),
+            tutar: clean(r[8]),
+            gKZ: clean(r[9]),
+            hKZ: clean(r[10]),
+            aKZ: clean(r[11]),
+            tKZ: clean(r[15]) || (clean(r[8]) - clean(r[6])),
+            sepet: r[18]?.trim() || "Genel Sepet"
+          };
+          
+          // Hesaplanan alanlar
+          if (item.tKZ === 0 && item.tutar > 0 && item.yatirim > 0) {
+            item.tKZ = item.tutar - item.yatirim;
+          }
+          
+          globalData.push(item);
+          
+          if (i < 3) {
+            debug('Item ' + i + ': ' + item.ad + ' Yatırım=' + item.yatirim + ' Tutar=' + item.tutar);
+          }
+        }
+        
+        debug('İşlenen kayıt: ' + globalData.length);
+        fetchMarketData();
+      },
+      error: function(err) {
+        debug('HATA: ' + err);
+        setStatus('Hata', 'err');
       }
-      if (y.length === 2) y = '20' + y;
-      return new Date(y, m-1, d);
-    } catch(e) { return null; }
-  };
+    });
+  }
 
-  /* ======= RENDER ======= */
-  const renderAll = () => {
-    log('renderAll başladı', { dataLength: globalData.length });
+  function fetchMarketData() {
+    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID_PIYASALAR}&single=true&output=csv`;
+    
+    Papa.parse(url, {
+      download: true,
+      complete: function(results) {
+        marketData = results.data.slice(1)
+          .filter(r => r[0] && r[0].trim() !== '')
+          .map(r => ({
+            ad: r[0].trim(),
+            fiyat: clean(r[1]),
+            degisim: clean(r[2])
+          }));
+        setStatus('Bağlandı', 'ok');
+        renderAll();
+        updateDebug();
+      },
+      error: function() {
+        marketData = [];
+        setStatus('Piyasa hatası', 'err');
+        renderAll();
+      }
+    });
+  }
+
+  function setStatus(text, type) {
+    const badge = document.getElementById('statusBadge');
+    badge.textContent = text;
+    badge.className = 'status-badge status-' + type;
+  }
+
+  // ==========================================
+  // RENDER
+  // ==========================================
+  function renderAll() {
+    debug('renderAll() başladı, kayıt: ' + globalData.length);
     
     if (globalData.length === 0) {
-      log('UYARI: globalData boş!');
-      document.getElementById('summaryGrid').innerHTML = '<div class="card" style="grid-column: span 3; text-align: center; color: var(--down);">Veri yüklenemedi</div>';
+      document.getElementById('summaryGrid').innerHTML = '<div class="card" style="grid-column: span 3; text-align: center;">Veri yok</div>';
       return;
     }
-
-    // Önce totals'ı hesapla - BAĞIMSIZ olarak
-    const totals = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0 };
     
-    globalData.forEach((item, idx) => {
-      totals.yatirim += (item.yatirim || 0);
-      totals.tutar += (item.tutar || 0);
-      totals.tKZ += (item.tKZ || 0);
-      totals.gKZ += (item.gKZ || 0);
-      totals.hKZ += (item.hKZ || 0);
-      totals.aKZ += (item.aKZ || 0);
-      
-      if (idx < 3) log(`Totals hesaplama ${idx}`, { 
-        yatirim: item.yatirim, 
-        tutar: item.tutar,
-        runningTotal: totals 
-      });
-    });
-
-    log('Final totals', totals);
-
-    // Grupları ayrı hesapla
+    const totals = calculateTotals();
+    debug('Totals: Yatırım=' + totals.yatirim + ' Tutar=' + totals.tutar + ' K/Z=' + totals.tKZ);
+    
+    // Gruplar
     const groups = {};
     const sepetGroups = {};
     
-    globalData.forEach(item => {
+    for (let item of globalData) {
       // Tür grupları
-      if (!groups[item.tur]) groups[item.tur] = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0, items: [] };
-      groups[item.tur].yatirim += (item.yatirim || 0);
-      groups[item.tur].tutar += (item.tutar || 0);
-      groups[item.tur].tKZ += (item.tKZ || 0);
-      groups[item.tur].gKZ += (item.gKZ || 0);
-      groups[item.tur].hKZ += (item.hKZ || 0);
-      groups[item.tur].aKZ += (item.aKZ || 0);
+      if (!groups[item.tur]) {
+        groups[item.tur] = { yatirim: 0, tutar: 0, tKZ: 0, gKZ: 0, hKZ: 0, aKZ: 0, items: [] };
+      }
+      groups[item.tur].yatirim += item.yatirim;
+      groups[item.tur].tutar += item.tutar;
+      groups[item.tur].tKZ += item.tKZ;
+      groups[item.tur].gKZ += item.gKZ;
+      groups[item.tur].hKZ += item.hKZ;
+      groups[item.tur].aKZ += item.aKZ;
       groups[item.tur].items.push(item);
       
       // Sepet grupları
       const s = item.sepet || "Genel Sepet";
-      if (!sepetGroups[s]) sepetGroups[s] = { yatirim:0, tutar:0, tKZ:0, gKZ:0, hKZ:0, aKZ:0, items: [] };
-      sepetGroups[s].yatirim += (item.yatirim || 0);
-      sepetGroups[s].tutar += (item.tutar || 0);
-      sepetGroups[s].tKZ += (item.tKZ || 0);
-      sepetGroups[s].gKZ += (item.gKZ || 0);
-      sepetGroups[s].hKZ += (item.hKZ || 0);
-      sepetGroups[s].aKZ += (item.aKZ || 0);
+      if (!sepetGroups[s]) {
+        sepetGroups[s] = { yatirim: 0, tutar: 0, tKZ: 0, gKZ: 0, hKZ: 0, aKZ: 0, items: [] };
+      }
+      sepetGroups[s].yatirim += item.yatirim;
+      sepetGroups[s].tutar += item.tutar;
+      sepetGroups[s].tKZ += item.tKZ;
+      sepetGroups[s].gKZ += item.gKZ;
+      sepetGroups[s].hKZ += item.hKZ;
+      sepetGroups[s].aKZ += item.aKZ;
       sepetGroups[s].items.push(item);
-    });
-
-    log('Groups sayısı', Object.keys(groups).length);
-    log('Sepet sayısı', Object.keys(sepetGroups).length);
-
+    }
+    
     renderSummaries(totals, groups);
     renderSepetCards(sepetGroups);
     renderTicker();
     renderMarketRows();
     renderPerformance();
-  };
-
-  const renderSummaries = (totals, groups) => {
-    log('renderSummaries', totals);
     
-    const keys = [
-      {id:'yatirim', l:'Yatırım'}, 
-      {id:'tutar', l:'Portföy'},
-      {id:'tKZ', l:'Toplam K/Z'}, 
-      {id:'gKZ', l:'Günlük K/Z'},
-      {id:'hKZ', l:'Haftalık K/Z'}, 
-      {id:'aKZ', l:'Aylık K/Z'}
-    ];
+    document.getElementById('lastUpdate').textContent = 'Son güncelleme: ' + new Date().toLocaleString('tr-TR');
+  }
 
-    const html = keys.map(k => {
-      const val = totals[k.id] || 0;
-      const isKZ = k.id.includes('KZ');
-      let p = null;
+  function renderSummaries(totals, groups) {
+    const keys = [
+      {id: 'yatirim', label: 'Yatırım', isMoney: true, isKZ: false},
+      {id: 'tutar', label: 'Portföy', isMoney: true, isKZ: false},
+      {id: 'tKZ', label: 'Toplam K/Z', isMoney: true, isKZ: true},
+      {id: 'gKZ', label: 'Günlük K/Z', isMoney: true, isKZ: true},
+      {id: 'hKZ', label: 'Haftalık K/Z', isMoney: true, isKZ: true},
+      {id: 'aKZ', label: 'Aylık K/Z', isMoney: true, isKZ: true}
+    ];
+    
+    let html = '';
+    
+    for (let k of keys) {
+      const val = totals[k.id];
+      let pct = null;
       
+      // Yüzde hesaplama
       if (k.id === 'tKZ' || k.id === 'tutar') {
-        p = pctTotalKZ(totals.tKZ, totals.yatirim);
-      } else if (['gKZ','hKZ','aKZ'].includes(k.id)) {
-        p = pctPeriodKZ(totals[k.id], totals.tutar);
+        pct = totals.yatirim > 0 ? (totals.tKZ / totals.yatirim) * 100 : 0;
+      } else if (['gKZ', 'hKZ', 'aKZ'].includes(k.id)) {
+        const base = totals.tutar - totals[k.id];
+        pct = base > 0 ? (totals[k.id] / base) * 100 : 0;
       }
       
-      log(`Kart ${k.l}`, { val, p, isKZ });
-
-      const distHtml = Object.keys(groups)
-        .sort((a,b) => groups[b][k.id] - groups[a][k.id])
-        .slice(0, 8)
-        .map(t => {
-          const v = groups[t][k.id] || 0;
-          let p2 = null;
-          if (k.id === 'tKZ' || k.id === 'tutar') {
-            p2 = pctTotalKZ(groups[t].tKZ, groups[t].yatirim);
-          } else if (['gKZ','hKZ','aKZ'].includes(k.id)) {
-            p2 = pctPeriodKZ(v, groups[t].tutar);
-          }
-          return `<div class="dist-row" onclick="event.stopPropagation(); showDetails('${t}')">
-            <span>${t}</span>
-            <span class="${isKZ ? kzClass(v) : ''}">
-              ${v.toLocaleString('tr-TR')} ${isKZ || k.id==='tutar' ? '₺' : ''}
-              ${p2 !== null ? `<span class="${pctClass(p2)}">${fmtPct(p2)}</span>` : ''}
-            </span>
-          </div>`;
-        }).join('');
-
-      return `<div class="card ${isKZ ? (val >= 0 ? 'up-card' : 'down-card') : ''}" onclick="toggleCard(this)">
-        <span>${k.l}</span>
-        <div class="value ${isKZ ? (val >= 0 ? 'up' : 'down') : ''}">
-          ${val.toLocaleString('tr-TR')} ${isKZ || k.id==='tutar' ? '₺' : ''}
-          ${p !== null ? `<span class="${pctClass(p)}">${fmtPct(p)}</span>` : ''}
+      const cardClass = k.isKZ ? (val >= 0 ? 'up-card' : 'down-card') : '';
+      const valClass = k.isKZ ? (val >= 0 ? 'up' : 'down') : '';
+      
+      // Dağılım listesi
+      let distHtml = '';
+      const sortedGroups = Object.keys(groups).sort((a, b) => groups[b][k.id] - groups[a][k.id]);
+      
+      for (let g of sortedGroups) {
+        const gv = groups[g][k.id];
+        let gpct = null;
+        if (k.id === 'tKZ' || k.id === 'tutar') {
+          gpct = groups[g].yatirim > 0 ? (groups[g].tKZ / groups[g].yatirim) * 100 : 0;
+        } else {
+          const gbase = groups[g].tutar - gv;
+          gpct = gbase > 0 ? (gv / gbase) * 100 : 0;
+        }
+        
+        const gClass = k.isKZ ? kzClass(gv) : '';
+        distHtml += `<div class="dist-row" onclick="event.stopPropagation(); showDetails('${g}')">
+          <span>${g}</span>
+          <span class="${gClass}">
+            ${fmt(gv)}${k.isMoney ? ' ₺' : ''}
+            ${gpct !== null ? `<span class="${pctClass(gpct)}">${fmtPct(gpct)}</span>` : ''}
+          </span>
+        </div>`;
+      }
+      
+      html += `<div class="card ${cardClass}" onclick="toggleCard(this)">
+        <span>${k.label}</span>
+        <div class="value ${valClass}">
+          ${fmt(val)}${k.isMoney ? ' ₺' : ''}
+          ${pct !== null ? `<span class="${pctClass(pct)}">${fmtPct(pct)}</span>` : ''}
         </div>
         <div class="dist-container">${distHtml}</div>
       </div>`;
-    }).join('');
-
-    document.getElementById("summaryGrid").innerHTML = html;
-    log('Summary HTML render edildi', html.substring(0, 200));
-  };
-
-  const renderSepetCards = sepetGroups => {
-    document.getElementById('sepetGrid').innerHTML = Object.keys(sepetGroups)
-      .sort((a,b) => (sepetGroups[b].tutar||0) - (sepetGroups[a].tutar||0))
-      .map(name => {
-        const g = sepetGroups[name];
-        const p = pctTotalKZ(g.tKZ, g.yatirim);
-        const top = g.items.sort((a,b) => (b.tutar||0) - (a.tutar||0))[0];
-        const share = g.tutar && top ? (100 * (top.tutar||0) / g.tutar) : 0;
-        const variety = g.items.length;
-        const uniqueTypes = [...new Set(g.items.map(x => x.tur))].length;
-        
-        return `<div class="sepet-card ${p>=0?'up-card':'down-card'}" onclick="showSepetDetails('${name.replace(/'/g,"\\'")}')">
-          <div class="sepet-name">${name}</div>
-          <div class="sepet-val ${g.tKZ>=0?'up':'down'}">
-            ${Number(g.tutar||0).toLocaleString('tr-TR')} ₺
-            <span class="${pctClass(p)}">${fmtPct(p)}</span>
-          </div>
-          <div class="sepet-sub">
-            En büyük: <b>${top?.ad || '-'}</b> (${share.toFixed(1)}%) • ${variety} varlık, ${uniqueTypes} tür
-          </div>
-        </div>`;
-      }).join('');
-  };
-
-  const renderPerformance = () => {
-    const sorted = globalData
-      .filter(d => (d.tutar || 0) > 50)
-      .sort((a, b) => pctPeriodKZ(b.gKZ, b.tutar) - pctPeriodKZ(a.gKZ, a.tutar));
-      
-    if (sorted.length > 0) {
-      const best = sorted[0], worst = sorted[sorted.length - 1];
-      const bestPct = pctPeriodKZ(best.gKZ, best.tutar);
-      const worstPct = pctPeriodKZ(worst.gKZ, worst.tutar);
-      
-      document.getElementById("bestName").innerText = best.ad;
-      document.getElementById("bestPct").className = pctClass(bestPct);
-      document.getElementById("bestPct").innerText = fmtPct(bestPct);
-      
-      document.getElementById("worstName").innerText = worst.ad;
-      document.getElementById("worstPct").className = pctClass(worstPct);
-      document.getElementById("worstPct").innerText = fmtPct(worstPct);
     }
-  };
+    
+    document.getElementById('summaryGrid').innerHTML = html;
+    debug('Summaries render edildi');
+  }
 
-  const renderMarketRows = () => {
-    const container = document.getElementById("marketRows");
-    if (!marketData?.length) {
-      container.innerHTML = '<div class="m-row"><span style="color:var(--text-muted); font-size:.7rem;">Piyasa verisi yüklenemedi</span></div>';
+  function renderSepetCards(sepetGroups) {
+    const sortedSepetler = Object.keys(sepetGroups).sort((a, b) => sepetGroups[b].tutar - sepetGroups[a].tutar);
+    
+    let html = '';
+    for (let name of sortedSepetler) {
+      const g = sepetGroups[name];
+      const p = g.yatirim > 0 ? (g.tKZ / g.yatirim) * 100 : 0;
+      const topItem = g.items.sort((a, b) => b.tutar - a.tutar)[0];
+      const share = g.tutar > 0 && topItem ? (topItem.tutar / g.tutar) * 100 : 0;
+      
+      html += `<div class="sepet-card ${p >= 0 ? 'up-card' : 'down-card'}" onclick="showSepetDetails('${name.replace(/'/g, "\\'")}')">
+        <div class="sepet-name">${name}</div>
+        <div class="sepet-val ${g.tKZ >= 0 ? 'up' : 'down'}">
+          ${fmt(g.tutar)} ₺<span class="${pctClass(p)}">${fmtPct(p)}</span>
+        </div>
+        <div class="sepet-sub">En büyük: ${topItem?.ad || '-'} (${share.toFixed(1)}%)</div>
+      </div>`;
+    }
+    
+    document.getElementById('sepetGrid').innerHTML = html;
+  }
+
+  function renderPerformance() {
+    const sorted = [...globalData]
+      .filter(d => d.tutar > 50)
+      .sort((a, b) => {
+        const pa = a.tutar - a.gKZ > 0 ? (a.gKZ / (a.tutar - a.gKZ)) * 100 : 0;
+        const pb = b.tutar - b.gKZ > 0 ? (b.gKZ / (b.tutar - b.gKZ)) * 100 : 0;
+        return pb - pa;
+      });
+    
+    if (sorted.length > 0) {
+      const best = sorted[0];
+      const worst = sorted[sorted.length - 1];
+      
+      const bestPct = best.tutar - best.gKZ > 0 ? (best.gKZ / (best.tutar - best.gKZ)) * 100 : 0;
+      const worstPct = worst.tutar - worst.gKZ > 0 ? (worst.gKZ / (worst.tutar - worst.gKZ)) * 100 : 0;
+      
+      document.getElementById('bestName').textContent = best.ad;
+      document.getElementById('bestPct').textContent = fmtPct(bestPct);
+      document.getElementById('bestPct').className = pctClass(bestPct);
+      
+      document.getElementById('worstName').textContent = worst.ad;
+      document.getElementById('worstPct').textContent = fmtPct(worstPct);
+      document.getElementById('worstPct').className = pctClass(worstPct);
+    }
+  }
+
+  function renderMarketRows() {
+    const container = document.getElementById('marketRows');
+    if (!marketData || marketData.length === 0) {
+      container.innerHTML = '<div class="m-row"><span style="color:var(--text-muted)">Veri yok</span></div>';
       return;
     }
-    container.innerHTML = marketData.map(item => {
+    
+    let html = '';
+    for (let item of marketData) {
       const p = item.degisim || 0;
-      const trend = p > 2 ? '🚀' : p > 0 ? '📈' : p < -2 ? '🔴' : p < 0 ? '📉' : '➖';
-      return `<div class="m-row">
-        <span style="font-size:.75rem; font-weight:800;">${trend} ${item.ad}</span>
-        <span style="font-weight:900; font-family:monospace;">
-          <span class="${p >= 0 ? 'up' : 'down'}">${(item.fiyat || 0).toLocaleString('tr-TR')}</span>
+      html += `<div class="m-row">
+        <span style="font-size:.75rem; font-weight:800;">${item.ad}</span>
+        <span style="font-weight:900;">
+          <span class="${p >= 0 ? 'up' : 'down'}">${fmt(item.fiyat)}</span>
           <span class="${pctClass(p)}">(${fmtPct(p)})</span>
         </span>
       </div>`;
-    }).join('');
-  };
+    }
+    container.innerHTML = html;
+  }
 
-  const renderTicker = () => {
-    const moves = globalData
-      .filter(a => (a.tutar || 0) > 10)
-      .sort((a,b) => Math.abs(pctPeriodKZ(b.gKZ, b.tutar)) - Math.abs(pctPeriodKZ(a.gKZ, a.tutar)))
-      .slice(0, 15)
-      .map(a => {
-        const p = pctPeriodKZ(a.gKZ, a.tutar);
-        const icon = p > 5 ? '🔥' : p < -5 ? '❄️' : '';
-        return `<div class="ticker-item">
-          <span>${icon} ${a.ad}</span>
-          <span class="${pctClass(p)}">${fmtPct(p)}</span>
-        </div>`;
-      });
-      
-    const ticker = document.getElementById("tickerContent");
-    ticker.innerHTML = moves.length ? moves.join('').repeat(4) : '<div class="ticker-item">Veri bekleniyor...</div>';
-    ticker.style.animationDuration = `${Math.max(moves.length * 3, 20)}s`;
-  };
-
-  /* ======= DETAILS ======= */
-  const showDetails = tur => {
-    document.getElementById("sepetSummaryWrap").style.display = "none";
-    document.getElementById("detailSection").style.display = "block";
-    document.getElementById("detailTitle").innerText = `VARLIK TÜRÜ: ${tur.toUpperCase()}`;
+  function renderTicker() {
+    const items = [...globalData]
+      .filter(a => a.tutar > 10)
+      .sort((a, b) => Math.abs(b.gKZ) - Math.abs(a.gKZ))
+      .slice(0, 15);
     
-    const items = globalData.filter(d => d.tur === tur).sort((a,b) => (b.tutar || 0) - (a.tutar || 0));
+    let html = '';
+    for (let item of items) {
+      const p = item.tutar - item.gKZ > 0 ? (item.gKZ / (item.tutar - item.gKZ)) * 100 : 0;
+      html += `<div class="ticker-item">
+        <span>${item.ad}</span>
+        <span class="${pctClass(p)}">${fmtPct(p)}</span>
+      </div>`;
+    }
+    
+    const ticker = document.getElementById('tickerContent');
+    ticker.innerHTML = html || '<div class="ticker-item">Veri yok</div>';
+    ticker.style.animationDuration = Math.max(items.length * 3, 20) + 's';
+  }
+
+  // ==========================================
+  // DETAY GÖSTERİM
+  // ==========================================
+  function showDetails(tur) {
+    document.getElementById('sepetSummaryWrap').style.display = 'none';
+    document.getElementById('detailSection').style.display = 'block';
+    document.getElementById('detailTitle').textContent = 'TÜR: ' + tur.toUpperCase();
+    
+    const items = globalData.filter(d => d.tur === tur).sort((a, b) => b.tutar - a.tutar);
     
     const tot = items.reduce((acc, x) => {
-      ['yatirim','tutar','tKZ','gKZ','hKZ','aKZ'].forEach(k => acc[k] += x[k]||0);
+      acc.yatirim += x.yatirim;
+      acc.tutar += x.tutar;
+      acc.tKZ += x.tKZ;
       return acc;
-    }, {yatirim:0,tutar:0,tKZ:0,gKZ:0,hKZ:0,aKZ:0});
+    }, {yatirim: 0, tutar: 0, tKZ: 0});
     
-    const pTotal = pctTotalKZ(tot.tKZ, tot.yatirim);
+    const p = tot.yatirim > 0 ? (tot.tKZ / tot.yatirim) * 100 : 0;
     
-    document.getElementById("assetGrid").innerHTML = `
+    document.getElementById('assetGrid').innerHTML = `
       <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border);">
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; font-size: 0.75rem;">
-          <div><div style="color: var(--text-muted); font-size: 0.6rem; margin-bottom: 4px;">TOPLAM VARLIK</div><div style="font-weight: 800; color: #ffd1ae;">${items.length}</div></div>
-          <div><div style="color: var(--text-muted); font-size: 0.6rem; margin-bottom: 4px;">YATIRIM</div><div style="font-weight: 800;">${tot.yatirim.toLocaleString('tr-TR')} ₺</div></div>
-          <div><div style="color: var(--text-muted); font-size: 0.6rem; margin-bottom: 4px;">GÜNCEL</div><div style="font-weight: 800; ${kzClass(tot.tKZ)}">${tot.tutar.toLocaleString('tr-TR')} ₺</div></div>
-          <div><div style="color: var(--text-muted); font-size: 0.6rem; margin-bottom: 4px;">K/Z</div><div style="font-weight: 800; ${kzClass(tot.tKZ)}">${fmtPct(pTotal)}</div></div>
+          <div><div style="color: var(--text-muted); font-size: 0.6rem;">VARLIK</div><div style="font-weight: 800; color: #ffd1ae;">${items.length}</div></div>
+          <div><div style="color: var(--text-muted); font-size: 0.6rem;">YATIRIM</div><div style="font-weight: 800;">${fmt(tot.yatirim)} ₺</div></div>
+          <div><div style="color: var(--text-muted); font-size: 0.6rem;">GÜNCEL</div><div class="${kzClass(tot.tKZ)}" style="font-weight: 800;">${fmt(tot.tutar)} ₺</div></div>
+          <div><div style="color: var(--text-muted); font-size: 0.6rem;">K/Z</div><div class="${kzClass(tot.tKZ)}" style="font-weight: 800;">${fmtPct(p)}</div></div>
         </div>
       </div>
-      ${items.map(assetItemTemplate).join('')}
+      ${items.map(renderAssetItem).join('')}
     `;
     
-    document.getElementById("detailSection").scrollIntoView({ behavior: 'smooth' });
-  };
+    document.getElementById('detailSection').scrollIntoView({behavior: 'smooth'});
+  }
 
-  const showSepetDetails = sepetName => {
-    document.getElementById("detailSection").style.display = "block";
-    document.getElementById("detailTitle").innerText = `SEPET: ${sepetName.toUpperCase()}`;
+  function showSepetDetails(sepetName) {
+    document.getElementById('detailSection').style.display = 'block';
+    document.getElementById('detailTitle').textContent = 'SEPET: ' + sepetName.toUpperCase();
     
-    const items = globalData.filter(x => (x.sepet||"Genel Sepet") === sepetName);
+    const items = globalData.filter(x => (x.sepet || "Genel Sepet") === sepetName);
+    
     const tot = items.reduce((acc, x) => {
-      ['yatirim','tutar','tKZ','gKZ','hKZ','aKZ'].forEach(k => acc[k] += x[k]||0);
+      acc.yatirim += x.yatirim;
+      acc.tutar += x.tutar;
+      acc.tKZ += x.tKZ;
+      acc.gKZ += x.gKZ;
+      acc.hKZ += x.hKZ;
+      acc.aKZ += x.aKZ;
       return acc;
-    }, {yatirim:0,tutar:0,tKZ:0,gKZ:0,hKZ:0,aKZ:0});
+    }, {yatirim: 0, tutar: 0, tKZ: 0, gKZ: 0, hKZ: 0, aKZ: 0});
     
-    const [pTotal, pG, pH, pA] = [
-      pctTotalKZ(tot.tKZ, tot.yatirim), 
-      pctPeriodKZ(tot.gKZ, tot.tutar), 
-      pctPeriodKZ(tot.hKZ, tot.tutar), 
-      pctPeriodKZ(tot.aKZ, tot.tutar)
-    ];
+    const pTotal = tot.yatirim > 0 ? (tot.tKZ / tot.yatirim) * 100 : 0;
+    const pG = tot.tutar - tot.gKZ > 0 ? (tot.gKZ / (tot.tutar - tot.gKZ)) * 100 : 0;
+    const pH = tot.tutar - tot.hKZ > 0 ? (tot.hKZ / (tot.tutar - tot.hKZ)) * 100 : 0;
+    const pA = tot.tutar - tot.aKZ > 0 ? (tot.aKZ / (tot.tutar - tot.aKZ)) * 100 : 0;
     
-    const kpi = (lbl, val, chip) => `<div class="kpi">
-      <div class="lbl">${lbl}</div>
-      <div class="val ${val >= 0 ? 'up' : 'down'}">
-        ${val.toLocaleString('tr-TR')} ₺
-        ${chip !== null ? `<span class="${pctClass(chip)}">${fmtPct(chip)}</span>` : ''}
+    // KPI'lar
+    const kpi = (label, val, pct) => `
+      <div class="kpi">
+        <div class="lbl">${label}</div>
+        <div class="val ${val >= 0 ? 'up' : 'down'}">
+          ${fmt(val)} ₺${pct !== null ? `<span class="${pctClass(pct)}">${fmtPct(pct)}</span>` : ''}
+        </div>
       </div>
-    </div>`;
+    `;
     
     document.getElementById('sepetKpis').innerHTML = 
-      kpi('Portföy', tot.tutar, pTotal) + 
-      kpi('Yatırım', tot.yatirim, null) + 
-      kpi('Toplam K/Z', tot.tKZ, pTotal) + 
-      kpi('Günlük', tot.gKZ, pG) + 
-      kpi('Haftalık', tot.hKZ, pH) + 
+      kpi('Portföy', tot.tutar, pTotal) +
+      kpi('Yatırım', tot.yatirim, null) +
+      kpi('Toplam K/Z', tot.tKZ, pTotal) +
+      kpi('Günlük', tot.gKZ, pG) +
+      kpi('Haftalık', tot.hKZ, pH) +
       kpi('Aylık', tot.aKZ, pA);
-
-    renderSepetGrowthChart(items, tot);
     
-    const avgDays = Math.round(items.reduce((acc, x) => {
-      const days = parseInt(getDaysBetween(x.alisTarihi));
-      return acc + (isNaN(days) ? 0 : days);
-    }, 0) / items.length) || 0;
+    // Grafik
+    renderSepetChart(items, tot);
     
-    const bestItem = items.reduce((best, x) => (x.tKZ > best.tKZ ? x : best), items[0]);
-    const worstItem = items.reduce((worst, x) => (x.tKZ < worst.tKZ ? x : worst), items[0]);
+    // İstatistikler
+    const avgDays = items.length > 0 ? Math.round(items.reduce((acc, x) => {
+      const d = parseInt(getDaysBetween(x.alisTarihi));
+      return acc + (isNaN(d) ? 0 : d);
+    }, 0) / items.length) : 0;
+    
+    const best = items.reduce((b, x) => x.tKZ > b.tKZ ? x : b, items[0]);
+    const worst = items.reduce((w, x) => x.tKZ < w.tKZ ? x : w, items[0]);
     
     document.getElementById('sepetStatsRow').innerHTML = `
-      <div class="stat-mini">
-        <div class="lbl">Ort. Süre</div>
-        <div class="val" style="color: #ffd1ae;">${avgDays} Gün</div>
-      </div>
-      <div class="stat-mini">
-        <div class="lbl">En İyi</div>
-        <div class="val up">${bestItem?.ad || '-'} ${bestItem ? fmtPct(pctTotalKZ(bestItem.tKZ, bestItem.yatirim)) : ''}</div>
-      </div>
-      <div class="stat-mini">
-        <div class="lbl">En Kötü</div>
-        <div class="val down">${worstItem?.ad || '-'} ${worstItem ? fmtPct(pctTotalKZ(worstItem.tKZ, worstItem.yatirim)) : ''}</div>
-      </div>
-      <div class="stat-mini">
-        <div class="lbl">Çeşitlilik</div>
-        <div class="val" style="color: #22d3ee;">${[...new Set(items.map(x => x.tur))].length} Tür</div>
-      </div>
+      <div class="stat-mini"><div class="lbl">Ort. Süre</div><div class="val" style="color: #ffd1ae;">${avgDays} Gün</div></div>
+      <div class="stat-mini"><div class="lbl">En İyi</div><div class="val up">${best?.ad || '-'} ${best ? fmtPct(best.yatirim > 0 ? (best.tKZ / best.yatirim) * 100 : 0) : ''}</div></div>
+      <div class="stat-mini"><div class="lbl">En Kötü</div><div class="val down">${worst?.ad || '-'} ${worst ? fmtPct(worst.yatirim > 0 ? (worst.tKZ / worst.yatirim) * 100 : 0) : ''}</div></div>
+      <div class="stat-mini"><div class="lbl">Çeşitlilik</div><div class="val" style="color: #22d3ee;">${[...new Set(items.map(x => x.tur))].length} Tür</div></div>
     `;
-
+    
+    // Top 3
+    const top3 = [...items].sort((a, b) => b.tutar - a.tutar).slice(0, 3);
     document.getElementById('sepetTopList').innerHTML = `
-      <div style="font-size: .65rem; font-weight: 900; color: #ffd1ae; margin-bottom: 8px; text-transform: uppercase;">🎯 En Büyük 3 Varlık</div>
-      ${items.sort((a,b) => (b.tutar||0)-(a.tutar||0)).slice(0,3).map((v, i) => {
-        const share = tot.tutar ? (100*(v.tutar||0)/tot.tutar) : 0;
+      <div style="font-size: .65rem; font-weight: 900; color: #ffd1ae; margin-bottom: 8px;">🎯 EN BÜYÜK 3 VARLIK</div>
+      ${top3.map((v, i) => {
+        const share = tot.tutar > 0 ? (v.tutar / tot.tutar) * 100 : 0;
         const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-        return `<div style="display:flex; justify-content:space-between; align-items: center; font-size:.72rem; padding:6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        return `<div style="display:flex; justify-content:space-between; font-size:.72rem; padding:6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
           <span>${medal} ${v.ad} <span style="color: var(--text-muted); font-size: 0.6rem;">(${v.tur})</span></span>
-          <span style="font-weight: 800;">${share.toFixed(1)}% • ${(v.tutar||0).toLocaleString('tr-TR')} ₺</span>
+          <span style="font-weight: 800;">${share.toFixed(1)}% • ${fmt(v.tutar)} ₺</span>
         </div>`;
       }).join('')}
     `;
     
-    document.getElementById("sepetSummaryWrap").style.display = "block";
-    document.getElementById("assetGrid").innerHTML = items
-      .sort((a,b) => (b.tutar || 0) - (a.tutar || 0))
-      .map(assetItemTemplate)
-      .join('');
-      
-    document.getElementById("detailSection").scrollIntoView({ behavior: 'smooth' });
-  };
+    document.getElementById('sepetSummaryWrap').style.display = 'block';
+    document.getElementById('assetGrid').innerHTML = items.sort((a, b) => b.tutar - a.tutar).map(renderAssetItem).join('');
+    document.getElementById('detailSection').scrollIntoView({behavior: 'smooth'});
+  }
 
-  const renderSepetGrowthChart = (items, totals) => {
+  function renderSepetChart(items, totals) {
     const ctx = document.getElementById('sepetChart').getContext('2d');
     
     if (sepetChart) {
@@ -857,53 +777,42 @@
       sepetChart = null;
     }
     
-    const sortedItems = [...items].sort((a, b) => {
-      const dateA = a.alisTarihiObj || new Date(0);
-      const dateB = b.alisTarihiObj || new Date(0);
-      return dateA - dateB;
+    // Tarihe göre sırala
+    const sorted = [...items].sort((a, b) => {
+      const da = a.alisTarihi ? new Date(a.alisTarihi.split('.').reverse().join('-')) : new Date(0);
+      const db = b.alisTarihi ? new Date(b.alisTarihi.split('.').reverse().join('-')) : new Date(0);
+      return da - db;
     });
     
     const labels = [];
     const yatirimData = [];
     const degerData = [];
     
-    if (sortedItems.length === 0 || !sortedItems[0].alisTarihiObj) {
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        labels.push(date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }));
-        const fluctuation = 1 + (Math.sin(i * 0.5) * 0.05) + (Math.random() * 0.02 - 0.01);
-        yatirimData.push(totals.yatirim);
-        degerData.push(totals.tutar * fluctuation);
-      }
-    } else {
-      let cumYatirim = 0;
-      let cumDeger = 0;
-      
-      sortedItems.forEach((item) => {
-        cumYatirim += item.yatirim;
-        cumDeger += item.tutar;
-        
-        const dateStr = item.alisTarihiObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
-        labels.push(dateStr);
-        yatirimData.push(cumYatirim);
-        degerData.push(cumDeger);
-      });
-      
-      if (labels[labels.length - 1] !== 'Bugün') {
-        labels.push('Bugün');
-        yatirimData.push(totals.yatirim);
-        degerData.push(totals.tutar);
-      }
+    let cumYatirim = 0;
+    let cumDeger = 0;
+    
+    for (let item of sorted) {
+      cumYatirim += item.yatirim;
+      cumDeger += item.tutar;
+      labels.push(item.alisTarihi || '-');
+      yatirimData.push(cumYatirim);
+      degerData.push(cumDeger);
     }
     
-    const gradientYatirim = ctx.createLinearGradient(0, 0, 0, 220);
-    gradientYatirim.addColorStop(0, 'rgba(23, 241, 167, 0.3)');
-    gradientYatirim.addColorStop(1, 'rgba(23, 241, 167, 0.0)');
+    // Bugünü ekle
+    if (labels[labels.length - 1] !== 'Bugün') {
+      labels.push('Bugün');
+      yatirimData.push(totals.yatirim);
+      degerData.push(totals.tutar);
+    }
     
-    const gradientDeger = ctx.createLinearGradient(0, 0, 0, 220);
-    gradientDeger.addColorStop(0, 'rgba(255, 122, 26, 0.4)');
-    gradientDeger.addColorStop(1, 'rgba(255, 122, 26, 0.0)');
+    const grad1 = ctx.createLinearGradient(0, 0, 0, 200);
+    grad1.addColorStop(0, 'rgba(23, 241, 167, 0.3)');
+    grad1.addColorStop(1, 'rgba(23, 241, 167, 0)');
+    
+    const grad2 = ctx.createLinearGradient(0, 0, 0, 200);
+    grad2.addColorStop(0, 'rgba(255, 122, 26, 0.4)');
+    grad2.addColorStop(1, 'rgba(255, 122, 26, 0)');
     
     sepetChart = new Chart(ctx, {
       type: 'line',
@@ -911,198 +820,122 @@
         labels: labels,
         datasets: [
           {
-            label: 'Yatırım (Maliyet)',
+            label: 'Yatırım',
             data: yatirimData,
             borderColor: '#17f1a7',
-            backgroundColor: gradientYatirim,
-            borderWidth: 2,
+            backgroundColor: grad1,
             fill: true,
             tension: 0.4,
-            pointRadius: 3,
-            pointRadius: 3,
-            pointBackgroundColor: '#17f1a7',
-            pointBorderColor: '#0a0b0f',
-            pointBorderWidth: 2
+            pointRadius: 3
           },
           {
-            label: 'Güncel Değer',
+            label: 'Değer',
             data: degerData,
             borderColor: '#ff7a1a',
-            backgroundColor: gradientDeger,
-            borderWidth: 3,
+            backgroundColor: grad2,
             fill: true,
             tension: 0.4,
             pointRadius: 4,
-            pointBackgroundColor: '#ff7a1a',
-            pointBorderColor: '#0a0b0f',
-            pointBorderWidth: 2,
-            pointHoverRadius: 6
+            borderWidth: 3
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: 'rgba(10, 11, 15, 0.95)',
+            backgroundColor: 'rgba(0,0,0,0.9)',
             titleColor: '#ffd1ae',
-            bodyColor: '#eef2f6',
-            borderColor: 'rgba(255,255,255,0.1)',
-            borderWidth: 1,
-            padding: 12,
-            displayColors: true,
             callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.parsed.y.toLocaleString('tr-TR') + ' ₺';
-              }
+              label: (ctx) => ctx.dataset.label + ': ' + fmt(ctx.parsed.y) + ' ₺'
             }
           }
         },
         scales: {
-          x: {
-            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
-            ticks: { color: '#9aa5b1', font: { size: 10 } }
-          },
-          y: {
-            grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9aa5b1', font: { size: 10 } } },
+          y: { 
+            grid: { color: 'rgba(255,255,255,0.05)' }, 
             ticks: { 
               color: '#9aa5b1', 
               font: { size: 10 },
-              callback: function(value) {
-                if (value >= 1000000) return (value/1000000).toFixed(1) + 'M';
-                if (value >= 1000) return (value/1000).toFixed(0) + 'K';
-                return value;
-              }
-            }
+              callback: (v) => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : v >= 1000 ? (v/1000).toFixed(0) + 'K' : v
+            } 
           }
         }
       }
     });
-  };
+  }
 
-  const assetItemTemplate = a => {
-    const [pTotal, pG, pH, pA] = [
-      pctTotalKZ(a.tKZ, a.yatirim), 
-      pctPeriodKZ(a.gKZ, a.tutar), 
-      pctPeriodKZ(a.hKZ, a.tutar), 
-      pctPeriodKZ(a.aKZ, a.tutar)
-    ];
-    
-    const profitIcon = a.tKZ > 0 ? '▲' : a.tKZ < 0 ? '▼' : '—';
+  function renderAssetItem(a) {
+    const pTotal = a.yatirim > 0 ? (a.tKZ / a.yatirim) * 100 : 0;
+    const pG = a.tutar - a.gKZ > 0 ? (a.gKZ / (a.tutar - a.gKZ)) * 100 : 0;
+    const pH = a.tutar - a.hKZ > 0 ? (a.hKZ / (a.tutar - a.hKZ)) * 100 : 0;
+    const pA = a.tutar - a.aKZ > 0 ? (a.aKZ / (a.tutar - a.aKZ)) * 100 : 0;
     
     return `<div class="asset-item">
       <div class="asset-main" onclick="toggleAsset(this.parentElement.querySelector('.asset-expand'))">
-        <div style="font-weight:800; font-size:.82rem; display: flex; align-items: center; gap: 8px;">
-          <span style="color: ${a.tKZ >= 0 ? 'var(--up)' : 'var(--down)'}; font-size: 0.7rem;">${profitIcon}</span>
+        <div style="font-weight:800; font-size:.82rem;">
+          <span style="color: ${a.tKZ >= 0 ? 'var(--up)' : 'var(--down)'}; font-size: 0.7rem; margin-right: 6px;">${a.tKZ >= 0 ? '▲' : '▼'}</span>
           ${a.ad}
         </div>
         <div style="text-align:right">
           <div class="${kzClass(a.tKZ)}" style="font-weight:900; font-size:.9rem;">
-            ${(a.tutar || 0).toLocaleString('tr-TR')} ₺
-            <span class="${pctClass(pTotal)}">(${fmtPct(pTotal)})</span>
+            ${fmt(a.tutar)} ₺<span class="${pctClass(pTotal)}">(${fmtPct(pTotal)})</span>
           </div>
-          <div class="${kzClass(a.tKZ)}" style="font-size:.62rem; opacity: 0.8;">
-            ${(a.tKZ || 0).toLocaleString('tr-TR')} ₺ K/Z
-          </div>
+          <div class="${kzClass(a.tKZ)}" style="font-size:.62rem; opacity: 0.8;">${fmt(a.tKZ)} ₺ K/Z</div>
         </div>
       </div>
       <div class="asset-expand">
-        <div class="det-box">
-          <span class="det-lbl">Güncel Fiyat</span>
-          <span class="det-val" style="color:#ffd1ae; font-weight:900;">${(a.fiyat || 0).toLocaleString('tr-TR')} ₺</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Sepet</span>
-          <span class="det-val">${a.sepet}</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Tür</span>
-          <span class="det-val">${a.tur || '-'}</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Adet</span>
-          <span class="det-val">${(a.adet || 0).toLocaleString('tr-TR')}</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Alış Fiyatı</span>
-          <span class="det-val">${(a.aFiyat || 0).toLocaleString('tr-TR')} ₺</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Yatırım</span>
-          <span class="det-val">${(a.yatirim || 0).toLocaleString('tr-TR')} ₺</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Süre</span>
-          <span class="det-val">${getDaysBetween(a.alisTarihi)}</span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Günlük K/Z</span>
-          <span class="det-val ${kzClass(a.gKZ)}">
-            ${(a.gKZ || 0).toLocaleString('tr-TR')} ₺
-            <span class="${pctClass(pG)}">${fmtPct(pG)}</span>
-          </span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Haftalık K/Z</span>
-          <span class="det-val ${kzClass(a.hKZ)}">
-            ${(a.hKZ || 0).toLocaleString('tr-TR')} ₺
-            <span class="${pctClass(pH)}">${fmtPct(pH)}</span>
-          </span>
-        </div>
-        <div class="det-box">
-          <span class="det-lbl">Aylık K/Z</span>
-          <span class="det-val ${kzClass(a.aKZ)}">
-            ${(a.aKZ || 0).toLocaleString('tr-TR')} ₺
-            <span class="${pctClass(pA)}">${fmtPct(pA)}</span>
-          </span>
-        </div>
+        <div class="det-box"><span class="det-lbl">Güncel Fiyat</span><span class="det-val" style="color:#ffd1ae;">${fmt(a.fiyat)} ₺</span></div>
+        <div class="det-box"><span class="det-lbl">Sepet</span><span class="det-val">${a.sepet}</span></div>
+        <div class="det-box"><span class="det-lbl">Tür</span><span class="det-val">${a.tur || '-'}</span></div>
+        <div class="det-box"><span class="det-lbl">Adet</span><span class="det-val">${fmt(a.adet)}</span></div>
+        <div class="det-box"><span class="det-lbl">Alış Fiyatı</span><span class="det-val">${fmt(a.aFiyat)} ₺</span></div>
+        <div class="det-box"><span class="det-lbl">Yatırım</span><span class="det-val">${fmt(a.yatirim)} ₺</span></div>
+        <div class="det-box"><span class="det-lbl">Süre</span><span class="det-val">${getDaysBetween(a.alisTarihi)}</span></div>
+        <div class="det-box"><span class="det-lbl">Günlük K/Z</span><span class="det-val ${kzClass(a.gKZ)}">${fmt(a.gKZ)} ₺<span class="${pctClass(pG)}">${fmtPct(pG)}</span></span></div>
+        <div class="det-box"><span class="det-lbl">Haftalık K/Z</span><span class="det-val ${kzClass(a.hKZ)}">${fmt(a.hKZ)} ₺<span class="${pctClass(pH)}">${fmtPct(pH)}</span></span></div>
+        <div class="det-box"><span class="det-lbl">Aylık K/Z</span><span class="det-val ${kzClass(a.aKZ)}">${fmt(a.aKZ)} ₺<span class="${pctClass(pA)}">${fmtPct(pA)}</span></span></div>
         <div class="det-box" style="grid-column: span 2; background: rgba(255,255,255,0.05);">
           <span class="det-lbl">Toplam K/Z</span>
-          <span class="det-val ${kzClass(a.tKZ)}" style="font-size: 1rem;">
-            ${(a.tKZ || 0).toLocaleString('tr-TR')} ₺
-            <span class="${pctClass(pTotal)}">${fmtPct(pTotal)}</span>
-          </span>
+          <span class="det-val ${kzClass(a.tKZ)}" style="font-size: 1rem;">${fmt(a.tKZ)} ₺<span class="${pctClass(pTotal)}">${fmtPct(pTotal)}</span></span>
         </div>
       </div>
     </div>`;
-  };
+  }
 
-  /* ======= UI ======= */
-  const toggleCard = el => {
+  // ==========================================
+  // UI FONKSİYONLARI
+  // ==========================================
+  function toggleCard(el) {
     const active = el.classList.contains('active');
-    document.querySelectorAll('.card').forEach(c => { 
-      c.classList.remove('active'); 
-      c.style.zIndex = "1"; 
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.remove('active');
+      c.style.zIndex = '1';
     });
-    if (!active) { 
-      el.classList.add('active'); 
-      el.style.zIndex = "999"; 
+    if (!active) {
+      el.classList.add('active');
+      el.style.zIndex = '999';
     }
-  };
-  
-  const toggleSepetBlock = () => {
-    const block = document.getElementById('sepetBlock');
-    block.classList.toggle('collapsed');
-  };
-  
-  const toggleMarketBlock = () => {
-    const block = document.getElementById('marketBlock');
-    block.classList.toggle('collapsed');
-  };
-  
-  const toggleAsset = el => {
-    const isGrid = el.style.display === 'grid';
+  }
+
+  function toggleSepetBlock() {
+    document.getElementById('sepetBlock').classList.toggle('collapsed');
+  }
+
+  function toggleMarketBlock() {
+    document.getElementById('marketBlock').classList.toggle('collapsed');
+  }
+
+  function toggleAsset(el) {
+    const isVisible = el.style.display === 'grid';
     document.querySelectorAll('.asset-expand').forEach(d => d.style.display = 'none');
-    el.style.display = isGrid ? 'none' : 'grid';
-  };
-  
-  const closeAll = () => {
+    el.style.display = isVisible ? 'none' : 'grid';
+  }
+
+  function closeAll() {
     document.getElementById('detailSection').style.display = 'none';
     document.getElementById('sepetSummaryWrap').style.display = 'none';
     document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -1110,21 +943,13 @@
       sepetChart.destroy();
       sepetChart = null;
     }
-  };
+  }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeAll();
-  });
-
-  /* ======= INIT ======= */
+  // ==========================================
+  // BAŞLAT
+  // ==========================================
   fetchData();
-  setInterval(fetchData, 300000);
-  
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && lastFetchTime && (new Date() - lastFetchTime > 300000)) {
-      fetchData();
-    }
-  });
+  setInterval(fetchData, 300000); // 5 dakika
 </script>
 </body>
 </html>
